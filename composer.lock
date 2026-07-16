@@ -9278,16 +9278,16 @@
         },
         {
             "name": "nickdekruijk/leap-template",
-            "version": "0.10.5",
+            "version": "0.10.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap-template.git",
-                "reference": "6ed34321d7c3f1a3b703e6c5a74d2d811121f381"
+                "reference": "de1087fcf4e105fc8d678fa4020a534274f71d9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/6ed34321d7c3f1a3b703e6c5a74d2d811121f381",
-                "reference": "6ed34321d7c3f1a3b703e6c5a74d2d811121f381",
+                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/de1087fcf4e105fc8d678fa4020a534274f71d9a",
+                "reference": "de1087fcf4e105fc8d678fa4020a534274f71d9a",
                 "shasum": ""
             },
             "require": {
@@ -9303,7 +9303,7 @@
             "suggest": {
                 "nickdekruijk/horizontal-scroller": "Horizontal-scroll sections used by the frontend template",
                 "nickdekruijk/imageresize": "Responsive asset_resized() images used by the frontend template",
-                "nickdekruijk/minify": "SCSS/JS compilation and bundling used by the frontend template (php artisan leap:template)",
+                "nickdekruijk/minify": "^4.0 for SCSS/JS compilation and bundling used by the frontend template (php artisan leap:template)",
                 "nickdekruijk/settings": "Admin-editable settings and footer used by the frontend template (php artisan leap:template)",
                 "nickdekruijk/vanilla-slider": "Carousel/slider used by the frontend template"
             },
@@ -9340,9 +9340,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap-template/issues",
-                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.5"
+                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.7"
             },
-            "time": "2026-07-15T19:46:23+00:00"
+            "time": "2026-07-16T12:51:43+00:00"
         },
         {
             "name": "nunomaduro/collision",
