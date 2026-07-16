@@ -3124,16 +3124,16 @@
         },
         {
             "name": "nickdekruijk/leap",
-            "version": "0.10.6",
+            "version": "0.10.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap.git",
-                "reference": "5fc0d7ab2a8bc18522289ecfe4b5984cbe9a7f55"
+                "reference": "aea4f523f37a3bd03d9338f4027fbb04418ec8ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/5fc0d7ab2a8bc18522289ecfe4b5984cbe9a7f55",
-                "reference": "5fc0d7ab2a8bc18522289ecfe4b5984cbe9a7f55",
+                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/aea4f523f37a3bd03d9338f4027fbb04418ec8ad",
+                "reference": "aea4f523f37a3bd03d9338f4027fbb04418ec8ad",
                 "shasum": ""
             },
             "require": {
@@ -3191,9 +3191,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap/issues",
-                "source": "https://github.com/nickdekruijk/leap/tree/0.10.6"
+                "source": "https://github.com/nickdekruijk/leap/tree/0.10.7"
             },
-            "time": "2026-07-16T11:37:15+00:00"
+            "time": "2026-07-16T13:26:30+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -9278,21 +9278,21 @@
         },
         {
             "name": "nickdekruijk/leap-template",
-            "version": "0.10.7",
+            "version": "0.10.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap-template.git",
-                "reference": "de1087fcf4e105fc8d678fa4020a534274f71d9a"
+                "reference": "a26483385d617e4249ee8fe34bd8f7f531cec38a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/de1087fcf4e105fc8d678fa4020a534274f71d9a",
-                "reference": "de1087fcf4e105fc8d678fa4020a534274f71d9a",
+                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/a26483385d617e4249ee8fe34bd8f7f531cec38a",
+                "reference": "a26483385d617e4249ee8fe34bd8f7f531cec38a",
                 "shasum": ""
             },
             "require": {
                 "laravel/framework": "^12.0|^13.0",
-                "nickdekruijk/leap": "^0.10",
+                "nickdekruijk/leap": "^0.10.7",
                 "php": "^8.3"
             },
             "require-dev": {
@@ -9340,9 +9340,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap-template/issues",
-                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.7"
+                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.8"
             },
-            "time": "2026-07-16T12:51:43+00:00"
+            "time": "2026-07-16T13:29:56+00:00"
         },
         {
             "name": "nunomaduro/collision",
