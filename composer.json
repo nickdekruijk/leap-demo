@@ -21,7 +21,7 @@
         "laravel/pao": "^1.0.6",
         "laravel/pint": "^1.27",
         "mockery/mockery": "^1.6",
-        "nickdekruijk/leap-template": "^0.10.5",
+        "nickdekruijk/leap-template": "dev-master",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^4.7",
         "pestphp/pest-plugin-laravel": "^4.1"

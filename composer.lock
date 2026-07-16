@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f7366fba4eae68278426583f12553342",
+    "content-hash": "d418de76b01637d6452342f0d4c65cef",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3124,16 +3124,16 @@
         },
         {
             "name": "nickdekruijk/leap",
-            "version": "0.10.7",
+            "version": "0.10.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap.git",
-                "reference": "aea4f523f37a3bd03d9338f4027fbb04418ec8ad"
+                "reference": "d2d7290015d1dfbaff3b9d3aa1d3f75c4a14864f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/aea4f523f37a3bd03d9338f4027fbb04418ec8ad",
-                "reference": "aea4f523f37a3bd03d9338f4027fbb04418ec8ad",
+                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/d2d7290015d1dfbaff3b9d3aa1d3f75c4a14864f",
+                "reference": "d2d7290015d1dfbaff3b9d3aa1d3f75c4a14864f",
                 "shasum": ""
             },
             "require": {
@@ -3191,9 +3191,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap/issues",
-                "source": "https://github.com/nickdekruijk/leap/tree/0.10.7"
+                "source": "https://github.com/nickdekruijk/leap/tree/0.10.8"
             },
-            "time": "2026-07-16T13:26:30+00:00"
+            "time": "2026-07-16T13:59:36+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -9278,16 +9278,16 @@
         },
         {
             "name": "nickdekruijk/leap-template",
-            "version": "0.10.8",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap-template.git",
-                "reference": "a26483385d617e4249ee8fe34bd8f7f531cec38a"
+                "reference": "26395fb9b6436d71576a3c29324da392303ab118"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/a26483385d617e4249ee8fe34bd8f7f531cec38a",
-                "reference": "a26483385d617e4249ee8fe34bd8f7f531cec38a",
+                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/26395fb9b6436d71576a3c29324da392303ab118",
+                "reference": "26395fb9b6436d71576a3c29324da392303ab118",
                 "shasum": ""
             },
             "require": {
@@ -9307,6 +9307,7 @@
                 "nickdekruijk/settings": "Admin-editable settings and footer used by the frontend template (php artisan leap:template)",
                 "nickdekruijk/vanilla-slider": "Carousel/slider used by the frontend template"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -9340,9 +9341,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap-template/issues",
-                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.8"
+                "source": "https://github.com/nickdekruijk/leap-template/tree/master"
             },
-            "time": "2026-07-16T13:29:56+00:00"
+            "time": "2026-07-16T14:05:55+00:00"
         },
         {
             "name": "nunomaduro/collision",
@@ -11607,7 +11608,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "nickdekruijk/leap-template": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
