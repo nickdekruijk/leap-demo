@@ -85,6 +85,17 @@ class EventFactory extends Factory
     }
 
     /**
+     * An event that says when it starts but not when it stops — a talk or an opening
+     * whose end nobody commits to. The model's other branch: no end time means it runs
+     * until the end of its own day, and the card shows the start on its own without a
+     * dash trailing off into nothing.
+     */
+    public function withoutEndTime(): static
+    {
+        return $this->state(fn (): array => ['end_time' => null]);
+    }
+
+    /**
      * An event that runs into the small hours — the exception the model has a rule for:
      * an end at or before the start means it finishes the next day.
      */

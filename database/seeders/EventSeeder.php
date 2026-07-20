@@ -18,10 +18,12 @@ class EventSeeder extends Seeder
             return;
         }
 
-        // One of them deliberately runs into the next day, so the seeded set covers the
-        // late-night case the model has a rule for instead of only the tidy evenings.
-        Event::factory()->count(5)->create()
+        // Two of them are deliberate rather than random, so the seeded set covers both
+        // branches the model has a rule for — an event running into the next day, and
+        // one with no end time at all — instead of only the tidy evenings.
+        Event::factory()->count(4)->create()
             ->push(Event::factory()->pastMidnight()->create())
+            ->push(Event::factory()->withoutEndTime()->create())
             ->each(function (Event $item): void {
                 $item->tags()->sync(Tag::inRandomOrder()->limit(rand(1, 2))->pluck('id'));
             });

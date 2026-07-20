@@ -47,6 +47,50 @@ class EventTimeTest extends TestCase
         );
     }
 
+    /**
+     * The other branch: no end time means the event runs until the end of its own day,
+     * so it stays upcoming all day rather than being over the moment it starts.
+     */
+    public function test_an_event_without_an_end_time_runs_until_the_end_of_its_day(): void
+    {
+        $event = Event::factory()->withoutEndTime()->create();
+
+        $this->assertNull($event->end_time);
+
+        // To the second: endOfDay() carries microseconds the datetime column does not.
+        $this->assertSame(
+            $event->date->copy()->endOfDay()->format('Y-m-d H:i:s'),
+            $event->ends_at->format('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * A card with no end time shows the start on its own — no dash trailing off into
+     * nothing where the end would have been.
+     */
+    public function test_a_card_without_an_end_time_shows_only_the_start(): void
+    {
+        $event = Event::factory()->withoutEndTime()->create();
+
+        // The event exists already, so the seeder adds none of its own — it runs here
+        // only for the overview page the card hangs under and takes its URL from.
+        $this->seed(EventSeeder::class);
+
+        $html = $this->get($this->overviewPath('Events'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('<span class="item-time">'.substr($event->start_time, 0, 5).'</span>', $html);
+    }
+
+    public function test_the_seeder_includes_an_event_without_an_end_time(): void
+    {
+        $this->seed(EventSeeder::class);
+
+        $this->assertNotEmpty(
+            Event::all()->filter(fn (Event $event): bool => empty($event->end_time)),
+            'Expected at least one seeded event without an end time'
+        );
+    }
+
     public function test_an_ordinary_event_ends_on_its_own_day(): void
     {
         $event = Event::factory()->create(['start_time' => '20:00', 'end_time' => '22:00']);
