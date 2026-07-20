@@ -81,6 +81,33 @@ class EventTimeTest extends TestCase
         $this->assertStringContainsString('<span class="item-time">'.substr($event->start_time, 0, 5).'</span>', $html);
     }
 
+    /**
+     * An overview shows upcoming events, so a seeded set dated at random around today
+     * turned up in a different size on every reseed. The dates are deliberate now: six
+     * upcoming every time, and six finished for a section set to past.
+     */
+    public function test_the_seeded_set_is_the_same_size_every_time(): void
+    {
+        $this->seed(EventSeeder::class);
+
+        $this->assertCount(6, Event::active()->future()->get());
+        $this->assertCount(6, Event::active()->past()->get());
+    }
+
+    /**
+     * Being created is not the same as being seen: the two deliberate cases only set
+     * times, so a random date could put either of them in the past and off the overview.
+     */
+    public function test_the_deliberate_cases_are_upcoming_and_so_actually_visible(): void
+    {
+        $this->seed(EventSeeder::class);
+
+        $upcoming = Event::active()->future()->get();
+
+        $this->assertNotEmpty($upcoming->filter(fn (Event $event): bool => $event->end_time <= $event->start_time));
+        $this->assertNotEmpty($upcoming->filter(fn (Event $event): bool => empty($event->end_time)));
+    }
+
     public function test_the_seeder_includes_an_event_without_an_end_time(): void
     {
         $this->seed(EventSeeder::class);

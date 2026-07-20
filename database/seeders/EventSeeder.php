@@ -18,12 +18,17 @@ class EventSeeder extends Seeder
             return;
         }
 
-        // Two of them are deliberate rather than random, so the seeded set covers both
-        // branches the model has a rule for — an event running into the next day, and
-        // one with no end time at all — instead of only the tidy evenings.
-        Event::factory()->count(4)->create()
-            ->push(Event::factory()->pastMidnight()->create())
-            ->push(Event::factory()->withoutEndTime()->create())
+        // Dated on purpose rather than at random. An overview shows upcoming events by
+        // default, so a random date spanning today meant a seeded set of six turned up
+        // as anywhere between two and six — and the two deliberate cases below could
+        // land in the past and never be seen at all.
+        //
+        // Six upcoming and six finished, so the overview always looks the same and a
+        // section set to past (or both) has as much to show as the default one.
+        Event::factory()->future()->count(4)->create()
+            ->push(Event::factory()->future()->pastMidnight()->create())
+            ->push(Event::factory()->future()->withoutEndTime()->create())
+            ->concat(Event::factory()->past()->count(6)->create())
             ->each(function (Event $item): void {
                 $item->tags()->sync(Tag::inRandomOrder()->limit(rand(1, 2))->pluck('id'));
             });
