@@ -24,13 +24,13 @@ class ProjectSeeder extends Seeder
     }
 
     /**
-     * The overview page this type's cards hang under, created once. The
-     * unlimited, untagged "projects" section is what makes it the canonical overview
-     * (see PageController::overviewPage()) and gives every item its detail URL.
+     * The overview page this type's cards hang under, created once. The unlimited,
+     * untagged "projects" section is what makes it the canonical overview (see
+     * PageController::overviewPage()) and gives every item its detail URL.
      *
-     * Title and slug are per locale: a Dutch site gets Projecten at /projecten, an
-     * English one Projects at /projects. Add the title to a lang file to name it in a
-     * new locale — an untranslated locale falls back to the English word.
+     * Title and slug are per locale: give "Projects" a translation in a lang file
+     * and that locale gets that name, with the slug derived from it. A locale without
+     * one falls back to the English word rather than to nothing.
      */
     protected function ensureOverviewPage(): void
     {

@@ -44,13 +44,13 @@ class News extends Model
 
     /**
      * The date the card and the detail page show. The shared item views ask every
-     * content type for `date`, and news has no column of its own: being published is
-     * what dates it, so that is the date it shows. This deliberately sits on the model
-     * rather than in the views — a type without a meaningful date, a project say, then
-     * simply has none and the views leave the line out.
+     * content type for `date`, and this type has no column of its own: being published
+     * is what dates it, so that is the date it shows. This deliberately sits on the
+     * model rather than in the views — a type without a meaningful date then simply has
+     * none and the views leave the line out.
      *
-     * Read-only, and not a column: News::where('date', …) and orderBy('date') do not
-     * work. Query published_at for those.
+     * Read-only, and not a column: News::where('date', …) and orderBy('date') do
+     * not work. Query published_at for those.
      *
      * @return Attribute<?Carbon, never>
      */

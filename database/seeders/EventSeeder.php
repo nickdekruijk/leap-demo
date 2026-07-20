@@ -19,9 +19,9 @@ class EventSeeder extends Seeder
         }
 
         // Dated on purpose rather than at random. An overview shows upcoming events by
-        // default, so a random date spanning today meant a seeded set of six turned up
-        // as anywhere between two and six — and the two deliberate cases below could
-        // land in the past and never be seen at all.
+        // default, so a date spanning today would make a seeded set turn up at a
+        // different size on every reseed — and the two deliberate cases below could land
+        // in the past, where the thing they exist to demonstrate is never seen.
         //
         // Six upcoming and six finished, so the overview always looks the same and a
         // section set to past (or both) has as much to show as the default one.
@@ -35,13 +35,13 @@ class EventSeeder extends Seeder
     }
 
     /**
-     * The overview page this type's cards hang under, created once. The
-     * unlimited, untagged "events" section is what makes it the canonical overview
-     * (see PageController::overviewPage()) and gives every item its detail URL.
+     * The overview page this type's cards hang under, created once. The unlimited,
+     * untagged "events" section is what makes it the canonical overview (see
+     * PageController::overviewPage()) and gives every item its detail URL.
      *
-     * Title and slug are per locale: a Dutch site gets Agenda at /agenda, an English
-     * one Events at /events. Add the title to a lang file to name it in a new locale —
-     * an untranslated locale falls back to the English word rather than to nothing.
+     * Title and slug are per locale: give "Events" a translation in a lang file
+     * and that locale gets that name, with the slug derived from it. A locale without
+     * one falls back to the English word rather than to nothing.
      */
     protected function ensureOverviewPage(): void
     {

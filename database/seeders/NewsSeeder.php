@@ -24,13 +24,13 @@ class NewsSeeder extends Seeder
     }
 
     /**
-     * The overview page this type's cards hang under, created once. The
-     * unlimited, untagged "news" section is what makes it the canonical overview
-     * (see PageController::overviewPage()) and gives every item its detail URL.
+     * The overview page this type's cards hang under, created once. The unlimited,
+     * untagged "news" section is what makes it the canonical overview (see
+     * PageController::overviewPage()) and gives every item its detail URL.
      *
-     * Title and slug are per locale: a Dutch site gets Nieuws at /nieuws, an English
-     * one News at /news. Add the title to a lang file to name it in a new locale —
-     * an untranslated locale falls back to the English word rather than to nothing.
+     * Title and slug are per locale: give "News" a translation in a lang file
+     * and that locale gets that name, with the slug derived from it. A locale without
+     * one falls back to the English word rather than to nothing.
      */
     protected function ensureOverviewPage(): void
     {
