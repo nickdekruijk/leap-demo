@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d418de76b01637d6452342f0d4c65cef",
+    "content-hash": "9fd88c33cbb2da9392983906ecc2aef8",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3123,17 +3123,110 @@
             "time": "2026-05-11T20:49:54+00:00"
         },
         {
-            "name": "nickdekruijk/leap",
-            "version": "0.10.8",
+            "name": "nickdekruijk/horizontal-scroller",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nickdekruijk/leap.git",
-                "reference": "d2d7290015d1dfbaff3b9d3aa1d3f75c4a14864f"
+                "url": "https://github.com/nickdekruijk/horizontal-scroller.git",
+                "reference": "21402d28c44286dbd10d0768c5fc86d93cad4ab1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/d2d7290015d1dfbaff3b9d3aa1d3f75c4a14864f",
-                "reference": "d2d7290015d1dfbaff3b9d3aa1d3f75c4a14864f",
+                "url": "https://api.github.com/repos/nickdekruijk/horizontal-scroller/zipball/21402d28c44286dbd10d0768c5fc86d93cad4ab1",
+                "reference": "21402d28c44286dbd10d0768c5fc86d93cad4ab1",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nick de Kruijk",
+                    "email": "git@nickdekruijk.nl"
+                }
+            ],
+            "description": "Add a horizontal scrolling element",
+            "keywords": [
+                "horizontal",
+                "javascript",
+                "scroll",
+                "scrollbar"
+            ],
+            "support": {
+                "issues": "https://github.com/nickdekruijk/horizontal-scroller/issues",
+                "source": "https://github.com/nickdekruijk/horizontal-scroller/tree/3.2.0"
+            },
+            "time": "2026-07-09T08:10:23+00:00"
+        },
+        {
+            "name": "nickdekruijk/imageresize",
+            "version": "1.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nickdekruijk/imageresize.git",
+                "reference": "8b893827b58d52865eafbce1dfa1ddf47595eb77"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nickdekruijk/imageresize/zipball/8b893827b58d52865eafbce1dfa1ddf47595eb77",
+                "reference": "8b893827b58d52865eafbce1dfa1ddf47595eb77",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "NickDeKruijk\\ImageResize\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "NickDeKruijk\\ImageResize\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nick de Kruijk",
+                    "email": "git@nickdekruijk.nl"
+                }
+            ],
+            "description": "A simple, yet efficient solution for image resizing and caching with Laravel",
+            "homepage": "http://www.nickdekruijk.nl/packages/imageresize",
+            "keywords": [
+                "cache",
+                "image",
+                "laravel",
+                "php",
+                "resize"
+            ],
+            "support": {
+                "issues": "https://github.com/nickdekruijk/imageresize/issues",
+                "source": "https://github.com/nickdekruijk/imageresize/tree/1.3.3"
+            },
+            "time": "2026-02-02T13:22:03+00:00"
+        },
+        {
+            "name": "nickdekruijk/leap",
+            "version": "0.10.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nickdekruijk/leap.git",
+                "reference": "e148ea5278a25d23f2482cc2b4291ec91f1fd276"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/e148ea5278a25d23f2482cc2b4291ec91f1fd276",
+                "reference": "e148ea5278a25d23f2482cc2b4291ec91f1fd276",
                 "shasum": ""
             },
             "require": {
@@ -3191,9 +3284,165 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap/issues",
-                "source": "https://github.com/nickdekruijk/leap/tree/0.10.8"
+                "source": "https://github.com/nickdekruijk/leap/tree/0.10.12"
             },
-            "time": "2026-07-16T13:59:36+00:00"
+            "time": "2026-07-17T09:51:28+00:00"
+        },
+        {
+            "name": "nickdekruijk/minify",
+            "version": "4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nickdekruijk/minify.git",
+                "reference": "3ddd4e6a6b5672b7ba2881e90b0ad457f38c9612"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nickdekruijk/minify/zipball/3ddd4e6a6b5672b7ba2881e90b0ad457f38c9612",
+                "reference": "3ddd4e6a6b5672b7ba2881e90b0ad457f38c9612",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2",
+                "scssphp/scssphp": "^2.0",
+                "tedivm/jshrink": "^1.3"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.18",
+                "orchestra/testbench": "^10.0|^11.0",
+                "phpunit/phpunit": "^11.0|^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Minify": "NickDeKruijk\\Minify\\Facade"
+                    },
+                    "providers": [
+                        "NickDeKruijk\\Minify\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "NickDeKruijk\\Minify\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nick de Kruijk",
+                    "email": "git@nickdekruijk.nl"
+                }
+            ],
+            "description": "A package for automaticaly minifying CSS, SCSS and Javascript for Laravel",
+            "keywords": [
+                "JS",
+                "css",
+                "javascript",
+                "laravel5",
+                "minify",
+                "sass",
+                "scss"
+            ],
+            "support": {
+                "issues": "https://github.com/nickdekruijk/minify/issues",
+                "source": "https://github.com/nickdekruijk/minify/tree/4.0.0"
+            },
+            "time": "2026-07-16T12:40:20+00:00"
+        },
+        {
+            "name": "nickdekruijk/settings",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nickdekruijk/settings.git",
+                "reference": "e7f54b2082f8b6ed2eba9e53b76fd8bbd7d951f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nickdekruijk/settings/zipball/e7f54b2082f8b6ed2eba9e53b76fd8bbd7d951f3",
+                "reference": "e7f54b2082f8b6ed2eba9e53b76fd8bbd7d951f3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "NickDeKruijk\\Settings\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "NickDeKruijk\\Settings\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nick de Kruijk",
+                    "email": "git@nickdekruijk.nl"
+                }
+            ],
+            "description": "A basic cache enabled Setting model, migration and helper for your Laravel project",
+            "homepage": "http://www.nickdekruijk.nl/packages/settings",
+            "keywords": [
+                "Settings",
+                "laravel",
+                "php",
+                "setting"
+            ],
+            "support": {
+                "issues": "https://github.com/nickdekruijk/settings/issues",
+                "source": "https://github.com/nickdekruijk/settings/tree/1.3.1"
+            },
+            "time": "2026-07-10T20:28:19+00:00"
+        },
+        {
+            "name": "nickdekruijk/vanilla-slider",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nickdekruijk/vanilla-slider.git",
+                "reference": "974004080f7c0e2153f8a22f9ca67db964cbbdde"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nickdekruijk/vanilla-slider/zipball/974004080f7c0e2153f8a22f9ca67db964cbbdde",
+                "reference": "974004080f7c0e2153f8a22f9ca67db964cbbdde",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nick de Kruijk",
+                    "email": "git@nickdekruijk.nl"
+                }
+            ],
+            "description": "A vanilla javascript slider",
+            "keywords": [
+                "javascript",
+                "slider"
+            ],
+            "support": {
+                "issues": "https://github.com/nickdekruijk/vanilla-slider/issues",
+                "source": "https://github.com/nickdekruijk/vanilla-slider/tree/1.1.0"
+            },
+            "time": "2025-03-18T11:43:31+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -4508,6 +4757,142 @@
             "time": "2026-06-18T03:57:49+00:00"
         },
         {
+            "name": "scssphp/scssphp",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/scssphp/scssphp.git",
+                "reference": "d8450c2baf5fb07d00374999d0ea51276974d1b6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/scssphp/scssphp/zipball/d8450c2baf5fb07d00374999d0ea51276974d1b6",
+                "reference": "d8450c2baf5fb07d00374999d0ea51276974d1b6",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "league/uri": "^7.6",
+                "league/uri-interfaces": "^7.6",
+                "php": ">=8.1",
+                "scssphp/source-span": "^1.1",
+                "symfony/filesystem": "^5.4 || ^6.0 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "jgthms/bulma": "~0.9.4",
+                "jiripudil/phpstan-sealed-classes": "^1.3",
+                "phpstan/phpstan": "^2.1.31",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpunit/phpunit": "^9.5.6",
+                "sass/sass-spec": "*",
+                "squizlabs/php_codesniffer": "^3.13",
+                "symfony/phpunit-bridge": "^7.3 || ^8.0",
+                "symfony/polyfill-php84": "^1.33",
+                "symfony/var-dumper": "^6.4 || ^7.3 || ^8.0",
+                "thoughtbot/bourbon": "^7.0",
+                "twbs/bootstrap": "^5.3",
+                "twbs/bootstrap4": "4.6.1",
+                "zurb/foundation": "~6.7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ScssPhp\\ScssPhp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anthon Pang",
+                    "email": "apang@softwaredevelopment.ca",
+                    "homepage": "https://github.com/robocoder"
+                },
+                {
+                    "name": "Cédric Morin",
+                    "email": "cedric@yterium.com",
+                    "homepage": "https://github.com/Cerdic"
+                }
+            ],
+            "description": "scssphp is a compiler for SCSS written in PHP.",
+            "homepage": "https://scssphp.github.io/scssphp/",
+            "keywords": [
+                "css",
+                "less",
+                "sass",
+                "scss",
+                "stylesheet"
+            ],
+            "support": {
+                "issues": "https://github.com/scssphp/scssphp/issues",
+                "source": "https://github.com/scssphp/scssphp/tree/v2.1.0"
+            },
+            "time": "2025-11-21T17:27:59+00:00"
+        },
+        {
+            "name": "scssphp/source-span",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/scssphp/source-span.git",
+                "reference": "37d653206daf11da1ee60b333984101bc4c27ba2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/scssphp/source-span/zipball/37d653206daf11da1ee60b333984101bc4c27ba2",
+                "reference": "37d653206daf11da1ee60b333984101bc4c27ba2",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "league/uri": "^7.6",
+                "league/uri-interfaces": "^7.6",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpunit/phpunit": "^9.5.6",
+                "squizlabs/php_codesniffer": "~3.5",
+                "symfony/phpunit-bridge": "^6.4 || ^7.3 || ^8.0",
+                "symfony/var-dumper": "^6.4 || ^7.3 || ^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "SourceSpan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christophe Coevoet",
+                    "homepage": "https://github.com/stof"
+                }
+            ],
+            "description": "Provides a representation for source code locations and spans.",
+            "keywords": [
+                "parsing"
+            ],
+            "support": {
+                "issues": "https://github.com/scssphp/source-span/issues",
+                "source": "https://github.com/scssphp/source-span/tree/v1.1.0"
+            },
+            "time": "2025-11-21T16:28:19+00:00"
+        },
+        {
             "name": "spatie/laravel-package-tools",
             "version": "1.93.1",
             "source": {
@@ -5394,6 +5779,77 @@
                 }
             ],
             "time": "2026-06-05T06:23:12+00:00"
+        },
+        {
+            "name": "symfony/filesystem",
+            "version": "v8.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/filesystem.git",
+                "reference": "99aec13b82b4967ec5088222c4a3ecca955949c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/99aec13b82b4967ec5088222c4a3ecca955949c2",
+                "reference": "99aec13b82b4967ec5088222c4a3ecca955949c2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "symfony/deprecation-contracts": "^2.5|^3",
+                "symfony/polyfill-ctype": "~1.8",
+                "symfony/polyfill-mbstring": "~1.8"
+            },
+            "require-dev": {
+                "symfony/process": "^7.4|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Filesystem\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides basic utilities for the filesystem",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/filesystem/tree/v8.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-05-29T05:06:50+00:00"
         },
         {
             "name": "symfony/finder",
@@ -7659,6 +8115,66 @@
             "time": "2026-06-09T10:54:51+00:00"
         },
         {
+            "name": "tedivm/jshrink",
+            "version": "v1.8.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tedious/JShrink.git",
+                "reference": "f76454d4c48ddae6354a2f0eeb16633d4e755c9a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tedious/JShrink/zipball/f76454d4c48ddae6354a2f0eeb16633d4e755c9a",
+                "reference": "f76454d4c48ddae6354a2f0eeb16633d4e755c9a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0|^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.14",
+                "php-coveralls/php-coveralls": "^2.5.0",
+                "phpunit/phpunit": "^9|^10"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "JShrink": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Robert Hafner",
+                    "email": "tedivm@tedivm.com"
+                }
+            ],
+            "description": "Javascript Minifier built in PHP",
+            "homepage": "http://github.com/tedious/JShrink",
+            "keywords": [
+                "javascript",
+                "minifier"
+            ],
+            "support": {
+                "issues": "https://github.com/tedious/JShrink/issues",
+                "source": "https://github.com/tedious/JShrink/tree/v1.8.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/tedivm",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/tedivm/jshrink",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-11-20T14:34:30+00:00"
+        },
+        {
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "v2.4.0",
             "source": {
@@ -9282,12 +9798,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap-template.git",
-                "reference": "70f47f9ba4820c22c5d42b6861cbf2c1e6b846b2"
+                "reference": "3ab7ade9d60bcf67074213f1ac4e11ddaf788ab6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/70f47f9ba4820c22c5d42b6861cbf2c1e6b846b2",
-                "reference": "70f47f9ba4820c22c5d42b6861cbf2c1e6b846b2",
+                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/3ab7ade9d60bcf67074213f1ac4e11ddaf788ab6",
+                "reference": "3ab7ade9d60bcf67074213f1ac4e11ddaf788ab6",
                 "shasum": ""
             },
             "require": {
@@ -9343,7 +9859,7 @@
                 "issues": "https://github.com/nickdekruijk/leap-template/issues",
                 "source": "https://github.com/nickdekruijk/leap-template/tree/master"
             },
-            "time": "2026-07-16T14:20:13+00:00"
+            "time": "2026-07-16T15:20:56+00:00"
         },
         {
             "name": "nunomaduro/collision",
