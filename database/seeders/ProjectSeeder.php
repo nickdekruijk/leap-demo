@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\Project;
 use App\Models\Tag;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class ProjectSeeder extends Seeder
 {
@@ -23,10 +24,13 @@ class ProjectSeeder extends Seeder
     }
 
     /**
-     * The overview page this type's cards hang under (/projects), created once. The
+     * The overview page this type's cards hang under, created once. The
      * unlimited, untagged "projects" section is what makes it the canonical overview
-     * (see PageController::overviewPage()) and gives every item its detail URL. Rename
-     * its slug per locale in the admin (e.g. nieuws / news).
+     * (see PageController::overviewPage()) and gives every item its detail URL.
+     *
+     * Title and slug are per locale: a Dutch site gets Projecten at /projecten, an
+     * English one Projects at /projects. Add the title to a lang file to name it in a
+     * new locale — an untranslated locale falls back to the English word.
      */
     protected function ensureOverviewPage(): void
     {
@@ -41,20 +45,21 @@ class ProjectSeeder extends Seeder
         }
 
         $locales = array_keys(config('leap.locales') ?: [app()->getLocale() => null]);
-        $translate = fn (string $value): array => collect($locales)->mapWithKeys(fn ($locale): array => [$locale => $value])->all();
+        $title = collect($locales)->mapWithKeys(fn ($locale): array => [$locale => __('Projects', [], $locale)])->all();
+        $slug = collect($title)->map(fn (string $value): string => Str::slug($value))->all();
 
         Page::create([
             'active' => true,
             'menuitem' => true,
-            'title' => $translate('Projects'),
-            'slug' => $translate('projects'),
+            'title' => $title,
+            'slug' => $slug,
             'sort' => 100 + (int) array_search('projects', array_keys(config('leap.content') ?: [])), // config order → menu/section order
             'sections' => [[
                 '_name' => 'projects',
                 '_view' => 'sections.items',
                 '_sort' => 0,
                 'active' => true,
-                'head' => $translate('Projects'),
+                'head' => $title,
             ]],
         ]);
     }

@@ -65,7 +65,7 @@ class SeoTest extends TestCase
         $news->setTranslations('intro', array_fill_keys($this->locales(), 'De korte kaarttekst'));
         $news->save();
 
-        $html = $this->get('/news/'.$news->slug)->assertOk()->getContent();
+        $html = $this->get($this->itemPath('News', $news->slug))->assertOk()->getContent();
 
         $this->assertStringContainsString('<meta name="description" content="De korte kaarttekst">', $html);
         $this->assertStringContainsString('<meta property="og:description" content="De korte kaarttekst">', $html);
@@ -80,7 +80,7 @@ class SeoTest extends TestCase
         $news->setTranslations('intro', array_fill_keys($this->locales(), 'De korte kaarttekst'));
         $news->save();
 
-        $html = $this->get('/news/'.$news->slug)->assertOk()->getContent();
+        $html = $this->get($this->itemPath('News', $news->slug))->assertOk()->getContent();
 
         $this->assertStringContainsString('<meta name="description" content="De bewuste SEO-tekst">', $html);
         // The JSON-LD used to disagree with the meta tags by preferring the intro.

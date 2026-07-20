@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Page;
 use App\Models\Tag;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class EventSeeder extends Seeder
 {
@@ -23,10 +24,13 @@ class EventSeeder extends Seeder
     }
 
     /**
-     * The overview page this type's cards hang under (/events), created once. The
+     * The overview page this type's cards hang under, created once. The
      * unlimited, untagged "events" section is what makes it the canonical overview
-     * (see PageController::overviewPage()) and gives every item its detail URL. Rename
-     * its slug per locale in the admin (e.g. nieuws / news).
+     * (see PageController::overviewPage()) and gives every item its detail URL.
+     *
+     * Title and slug are per locale: a Dutch site gets Agenda at /agenda, an English
+     * one Events at /events. Add the title to a lang file to name it in a new locale —
+     * an untranslated locale falls back to the English word rather than to nothing.
      */
     protected function ensureOverviewPage(): void
     {
@@ -41,20 +45,21 @@ class EventSeeder extends Seeder
         }
 
         $locales = array_keys(config('leap.locales') ?: [app()->getLocale() => null]);
-        $translate = fn (string $value): array => collect($locales)->mapWithKeys(fn ($locale): array => [$locale => $value])->all();
+        $title = collect($locales)->mapWithKeys(fn ($locale): array => [$locale => __('Events', [], $locale)])->all();
+        $slug = collect($title)->map(fn (string $value): string => Str::slug($value))->all();
 
         Page::create([
             'active' => true,
             'menuitem' => true,
-            'title' => $translate('Events'),
-            'slug' => $translate('events'),
+            'title' => $title,
+            'slug' => $slug,
             'sort' => 100 + (int) array_search('events', array_keys(config('leap.content') ?: [])), // config order → menu/section order
             'sections' => [[
                 '_name' => 'events',
                 '_view' => 'sections.items',
                 '_sort' => 0,
                 'active' => true,
-                'head' => $translate('Events'),
+                'head' => $title,
             ]],
         ]);
     }

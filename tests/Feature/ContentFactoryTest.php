@@ -71,7 +71,7 @@ class ContentFactoryTest extends TestCase
         $this->seed(NewsSeeder::class);
         $news = News::first();
 
-        $response = $this->get('/news/'.$news->slug);
+        $response = $this->get($this->itemPath('News', $news->slug));
 
         $response->assertOk();
 
