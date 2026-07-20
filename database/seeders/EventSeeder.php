@@ -18,9 +18,13 @@ class EventSeeder extends Seeder
             return;
         }
 
-        Event::factory()->count(6)->create()->each(function (Event $item): void {
-            $item->tags()->sync(Tag::inRandomOrder()->limit(rand(1, 2))->pluck('id'));
-        });
+        // One of them deliberately runs into the next day, so the seeded set covers the
+        // late-night case the model has a rule for instead of only the tidy evenings.
+        Event::factory()->count(5)->create()
+            ->push(Event::factory()->pastMidnight()->create())
+            ->each(function (Event $item): void {
+                $item->tags()->sync(Tag::inRandomOrder()->limit(rand(1, 2))->pluck('id'));
+            });
     }
 
     /**
