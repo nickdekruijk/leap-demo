@@ -7,11 +7,13 @@ use App\Models\Page;
 use Database\Seeders\NewsSeeder;
 use Database\Seeders\PageSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\ResolvesContentPaths;
 use Tests\TestCase;
 
 class SeoTest extends TestCase
 {
     use RefreshDatabase;
+    use ResolvesContentPaths;
 
     public function test_document_title_appends_the_site_name_to_a_plain_page_title(): void
     {

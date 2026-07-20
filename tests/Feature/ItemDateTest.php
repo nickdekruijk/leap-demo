@@ -6,6 +6,7 @@ use App\Models\News;
 use Database\Seeders\NewsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Tests\Concerns\ResolvesContentPaths;
 use Tests\TestCase;
 
 /**
@@ -17,6 +18,7 @@ use Tests\TestCase;
 class ItemDateTest extends TestCase
 {
     use RefreshDatabase;
+    use ResolvesContentPaths;
 
     public function test_a_news_items_date_is_its_publication_moment(): void
     {

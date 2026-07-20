@@ -7,6 +7,7 @@ use App\Models\News;
 use Database\Seeders\NewsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Concerns\ResolvesContentPaths;
 use Tests\TestCase;
 
 /**
@@ -18,6 +19,7 @@ use Tests\TestCase;
 class ContentFactoryTest extends TestCase
 {
     use RefreshDatabase;
+    use ResolvesContentPaths;
 
     /**
      * @return array<string, array{class-string}>

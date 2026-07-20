@@ -8,6 +8,7 @@ use App\Models\Tag;
 use Database\Seeders\EventSeeder;
 use Database\Seeders\NewsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\ResolvesContentPaths;
 use Tests\TestCase;
 
 /**
@@ -18,6 +19,7 @@ use Tests\TestCase;
 class ItemTagsTest extends TestCase
 {
     use RefreshDatabase;
+    use ResolvesContentPaths;
 
     public function test_an_items_tags_render_as_a_chip_list(): void
     {

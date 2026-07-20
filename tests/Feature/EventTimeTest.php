@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Event;
 use Database\Seeders\EventSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\ResolvesContentPaths;
 use Tests\TestCase;
 
 /**
@@ -15,6 +16,7 @@ use Tests\TestCase;
 class EventTimeTest extends TestCase
 {
     use RefreshDatabase;
+    use ResolvesContentPaths;
 
     public function test_times_fall_on_the_half_hour(): void
     {
@@ -70,7 +72,9 @@ class EventTimeTest extends TestCase
      */
     public function test_a_card_without_an_end_time_shows_only_the_start(): void
     {
-        $event = Event::factory()->withoutEndTime()->create();
+        // future(), or the overview leaves it out: it shows upcoming events, and a
+        // random date is as likely as not to be behind us.
+        $event = Event::factory()->future()->withoutEndTime()->create();
 
         // The event exists already, so the seeder adds none of its own — it runs here
         // only for the overview page the card hangs under and takes its URL from.
