@@ -1,0 +1,74 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Event;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<Event>
+ */
+class EventFactory extends Factory
+{
+    protected $model = Event::class;
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        // title and intro are translatable, so a plain string would land under whichever
+        // locale happened to be active and leave every other language of the admin blank.
+        // The text is the same in each: it is placeholder prose, and faking a different
+        // sentence per language would look like a translation that says something else.
+        $locales = array_keys(config('leap.locales') ?: [app()->getLocale() => null]);
+        $translate = fn (string $value): array => array_fill_keys($locales, $value);
+
+        return [
+            'active' => true,
+            'date' => fake()->dateTimeBetween('-1 month', '+3 months'),
+            'start_time' => '20:00',
+            'end_time' => '22:00',
+            'title' => $translate(rtrim(fake()->sentence(3), '.')),
+            'intro' => $translate(fake()->sentence(12)),
+            'sections' => [$this->textSection()],
+        ];
+    }
+
+    /**
+     * A "text with image" section, so a seeded item has a detail page with something on
+     * it rather than only its header. Without an image uploaded the text spans the full
+     * width; image_position is what the editor changes in the admin.
+     *
+     * @return array<string, mixed>
+     */
+    protected function textSection(): array
+    {
+        $locales = array_keys(config('leap.locales') ?: [app()->getLocale() => null]);
+        $translate = fn (string $value): array => array_fill_keys($locales, $value);
+
+        return [
+            '_name' => 'default',
+            '_sort' => 0,
+            'active' => true,
+            'image_position' => 'right',
+            'head' => $translate(rtrim(fake()->sentence(4), '.')),
+            'body' => $translate('<p>'.implode('</p><p>', fake()->paragraphs(2)).'</p>'),
+        ];
+    }
+
+    public function past(): static
+    {
+        return $this->state(fn (): array => ['date' => fake()->dateTimeBetween('-1 year', '-1 week')]);
+    }
+
+    public function future(): static
+    {
+        return $this->state(fn (): array => ['date' => fake()->dateTimeBetween('+1 week', '+1 year')]);
+    }
+
+    public function scheduled(): static
+    {
+        return $this->state(fn (): array => ['published_at' => now()->addWeek()]);
+    }
+}
