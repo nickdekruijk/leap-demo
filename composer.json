@@ -14,7 +14,7 @@
         "laravel/tinker": "^3.0",
         "nickdekruijk/horizontal-scroller": "^3.2",
         "nickdekruijk/imageresize": "^1.3",
-        "nickdekruijk/leap": "dev-master",
+        "nickdekruijk/leap": "^0.10.6",
         "nickdekruijk/minify": "^4.0",
         "nickdekruijk/settings": "^1.3",
         "nickdekruijk/vanilla-slider": "^1.1"
