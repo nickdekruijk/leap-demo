@@ -1,0 +1,62 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Project;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<Project>
+ */
+class ProjectFactory extends Factory
+{
+    protected $model = Project::class;
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        // title and intro are translatable, so a plain string would land under whichever
+        // locale happened to be active and leave every other language of the admin blank.
+        // The text is the same in each: it is placeholder prose, and faking a different
+        // sentence per language would look like a translation that says something else.
+        $locales = array_keys(config('leap.locales') ?: [app()->getLocale() => null]);
+        $translate = fn (string $value): array => array_fill_keys($locales, $value);
+
+        return [
+            'active' => true,
+            'sort' => fake()->numberBetween(1, 100),
+            'title' => $translate(rtrim(fake()->sentence(3), '.')),
+            'intro' => $translate(fake()->sentence(12)),
+            'sections' => [$this->textSection()],
+        ];
+    }
+
+    /**
+     * A "text with image" section, so a seeded item has a detail page with something on
+     * it rather than only its header. Without an image uploaded the text spans the full
+     * width; image_position is what the editor changes in the admin.
+     *
+     * @return array<string, mixed>
+     */
+    protected function textSection(): array
+    {
+        $locales = array_keys(config('leap.locales') ?: [app()->getLocale() => null]);
+        $translate = fn (string $value): array => array_fill_keys($locales, $value);
+
+        return [
+            '_name' => 'default',
+            '_sort' => 0,
+            'active' => true,
+            'image_position' => 'right',
+            'head' => $translate(rtrim(fake()->sentence(4), '.')),
+            'body' => $translate('<p>'.implode('</p><p>', fake()->paragraphs(2)).'</p>'),
+        ];
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (): array => ['active' => false]);
+    }
+}

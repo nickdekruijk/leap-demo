@@ -2,6 +2,7 @@
 
 use App\Models\Event;
 use App\Models\News;
+use App\Models\Project;
 use NickDeKruijk\Leap\Livewire\Dashboard;
 use NickDeKruijk\Leap\Livewire\FileManager;
 use NickDeKruijk\Leap\Livewire\Profile;
@@ -345,6 +346,7 @@ return [
     'content' => [
         'news' => News::class,
         'events' => Event::class,
+        'projects' => Project::class,
     ],
 
     /*
