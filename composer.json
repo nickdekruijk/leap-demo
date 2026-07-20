@@ -95,5 +95,10 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [{
+        "name": "leap-template",
+        "type": "path",
+        "url": "../nickdekruijk/leap-template"
+    }]
 }

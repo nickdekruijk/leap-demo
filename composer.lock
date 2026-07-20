@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9fd88c33cbb2da9392983906ecc2aef8",
+    "content-hash": "9e3e18b8f6e983923aca857496e72409",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -9795,20 +9795,14 @@
         {
             "name": "nickdekruijk/leap-template",
             "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nickdekruijk/leap-template.git",
-                "reference": "3ab7ade9d60bcf67074213f1ac4e11ddaf788ab6"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/3ab7ade9d60bcf67074213f1ac4e11ddaf788ab6",
-                "reference": "3ab7ade9d60bcf67074213f1ac4e11ddaf788ab6",
-                "shasum": ""
+                "type": "path",
+                "url": "../nickdekruijk/leap-template",
+                "reference": "d1bd54840ecbdc5a943ee443906869c2d7c5b32f"
             },
             "require": {
                 "laravel/framework": "^12.0|^13.0",
-                "nickdekruijk/leap": "^0.10.7",
+                "nickdekruijk/leap": "^0.10.10",
                 "php": "^8.3"
             },
             "require-dev": {
@@ -9823,7 +9817,6 @@
                 "nickdekruijk/settings": "Admin-editable settings and footer used by the frontend template (php artisan leap:template)",
                 "nickdekruijk/vanilla-slider": "Carousel/slider used by the frontend template"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -9837,7 +9830,16 @@
                     "NickDeKruijk\\LeapTemplate\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "NickDeKruijk\\LeapTemplate\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/phpunit"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -9855,11 +9857,9 @@
                 "scaffolding",
                 "template"
             ],
-            "support": {
-                "issues": "https://github.com/nickdekruijk/leap-template/issues",
-                "source": "https://github.com/nickdekruijk/leap-template/tree/master"
-            },
-            "time": "2026-07-16T15:20:56+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "nunomaduro/collision",
