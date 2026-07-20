@@ -98,11 +98,6 @@
     "prefer-stable": true,
     "repositories": [
         {
-            "name": "leap",
-            "type": "path",
-            "url": "../nickdekruijk/leap"
-        },
-        {
             "name": "leap-template",
             "type": "path",
             "url": "../nickdekruijk/leap-template"

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba8265cff000c07405a0cc20e44eebda",
+    "content-hash": "1b209c145c5dc090aa6d7a33103f9694",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3218,10 +3218,16 @@
         {
             "name": "nickdekruijk/leap",
             "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "../nickdekruijk/leap",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nickdekruijk/leap.git",
                 "reference": "e1cbc637fb7925fe3b5cbcc99978efdb4fcb7203"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/e1cbc637fb7925fe3b5cbcc99978efdb4fcb7203",
+                "reference": "e1cbc637fb7925fe3b5cbcc99978efdb4fcb7203",
+                "shasum": ""
             },
             "require": {
                 "blade-ui-kit/blade-icons": "^1.5",
@@ -3244,15 +3250,16 @@
             "suggest": {
                 "nickdekruijk/leap-template": "Frontend website template scaffolding (leap:template, leap:content) — install with composer require --dev"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "NickDeKruijk\\Leap\\ServiceProvider"
-                    ],
                     "aliases": {
                         "Leap": "NickDeKruijk\\Leap\\Facade"
-                    }
+                    },
+                    "providers": [
+                        "NickDeKruijk\\Leap\\ServiceProvider"
+                    ]
                 }
             },
             "autoload": {
@@ -3260,16 +3267,7 @@
                     "NickDeKruijk\\Leap\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "NickDeKruijk\\Leap\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/phpunit"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3285,9 +3283,11 @@
                 "laravel easy admin panel",
                 "leap"
             ],
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/nickdekruijk/leap/issues",
+                "source": "https://github.com/nickdekruijk/leap/tree/0.10.14"
+            },
+            "time": "2026-07-20T16:45:17+00:00"
         },
         {
             "name": "nickdekruijk/minify",
