@@ -344,8 +344,8 @@ return [
     |
     */
     'content' => [
-        'news' => News::class,
         'events' => Event::class,
+        'news' => News::class,
         'projects' => Project::class,
     ],
 
