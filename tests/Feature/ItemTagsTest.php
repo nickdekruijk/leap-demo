@@ -30,7 +30,28 @@ class ItemTagsTest extends TestCase
         $this->assertStringContainsString('<ul class="item-tags"', $html);
 
         foreach ($news->tags as $tag) {
-            $this->assertStringContainsString('<li>'.$tag->name.'</li>', $html);
+            $this->assertStringContainsString('>'.$tag->name.'</a>', $html);
+        }
+    }
+
+    /**
+     * A chip leads to the overview with that tag picked — the same URL the overview's own
+     * filter chips use, so the two always agree on the slug.
+     */
+    public function test_a_chip_links_to_the_filtered_overview(): void
+    {
+        $news = $this->seedTaggedNews();
+
+        $html = $this->get($this->itemPath('News', $news->slug))->assertOk()->getContent();
+
+        foreach ($news->tags as $tag) {
+            $target = $this->overviewPath('News').'?tag='.$tag->slug;
+
+            $this->assertStringContainsString('<a href="'.$target.'">'.$tag->name.'</a>', $html);
+
+            // Following it must land somewhere: a locale prefix left off the path would
+            // still read fine in the markup and 404 on the click.
+            $this->get($target)->assertOk();
         }
     }
 
