@@ -7,6 +7,31 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## About this project
+
+Test/demo installation of [`nickdekruijk/leap`](https://github.com/nickdekruijk/leap) +
+[`nickdekruijk/leap-template`](https://github.com/nickdekruijk/leap-template), deployed as the
+public demo at [leap.nickdekruijk.nl](https://leap.nickdekruijk.nl).
+
+### Demo mode
+
+With `DEMO_MODE=true` the site acts as a public playground: every Eloquent write made by the
+demo account moves a last-change marker (see `app/Listeners/RecordDemoChange.php`), and the
+scheduled `demo:reset` command rebuilds the database (`migrate:fresh --seed`) and cleans the
+public upload disk once the site has been untouched for `DEMO_RESET_AFTER` minutes — a
+debounce, not a fixed cycle. Settings live in `config/demo.php`:
+
+| env | default | |
+|---|---|---|
+| `DEMO_MODE` | `false` | enable demo mode (listener, schedule, reset command) |
+| `DEMO_EMAIL` | `info@example.com` | demo account, seeded with the superuser role |
+| `DEMO_PASSWORD` | `leapdemo` | publicly documented demo password |
+| `DEMO_RESET_AFTER` | `15` | idle minutes before the reset fires |
+| `DEMO_CACHE_STORE` | `file` | marker store; must survive `migrate:fresh` |
+
+Run `php artisan demo:reset --now` to reset immediately. The demo host needs the standard
+scheduler cron: `* * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1`
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
