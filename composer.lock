@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fc2e0e9ff2205d51e16fff072d35dba",
+    "content-hash": "9d2896f2b935761c2927e19afac1c04f",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3217,16 +3217,16 @@
         },
         {
             "name": "nickdekruijk/leap",
-            "version": "0.10.14",
+            "version": "0.10.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap.git",
-                "reference": "e1cbc637fb7925fe3b5cbcc99978efdb4fcb7203"
+                "reference": "d487572d750621c6a5c1208e2b824cbb225b921f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/e1cbc637fb7925fe3b5cbcc99978efdb4fcb7203",
-                "reference": "e1cbc637fb7925fe3b5cbcc99978efdb4fcb7203",
+                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/d487572d750621c6a5c1208e2b824cbb225b921f",
+                "reference": "d487572d750621c6a5c1208e2b824cbb225b921f",
                 "shasum": ""
             },
             "require": {
@@ -3284,9 +3284,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap/issues",
-                "source": "https://github.com/nickdekruijk/leap/tree/0.10.14"
+                "source": "https://github.com/nickdekruijk/leap/tree/0.10.15"
             },
-            "time": "2026-07-20T16:45:17+00:00"
+            "time": "2026-07-21T09:20:33+00:00"
         },
         {
             "name": "nickdekruijk/minify",

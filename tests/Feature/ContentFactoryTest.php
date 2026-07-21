@@ -83,4 +83,20 @@ class ContentFactoryTest extends TestCase
         $this->assertStringContainsString('<h1>'.$news->title.'</h1>', $html);
         $this->assertStringContainsString('<h2>'.$news->sections[0]['head'][app()->getLocale()].'</h2>', $html);
     }
+
+    /**
+     * The same goes for a slide, which on a page of its own would have carried the h1.
+     */
+    public function test_a_slide_on_an_item_does_not_compete_with_the_item_title(): void
+    {
+        $this->seed(NewsSeeder::class);
+        $news = News::first();
+        $news->sections = [['_name' => 'slide', '_sort' => 0, 'active' => true, 'head' => 'Hero']];
+        $news->save();
+
+        $html = $this->get($this->itemPath('News', $news->slug))->assertOk()->getContent();
+
+        $this->assertSame(1, substr_count($html, '<h1'), 'An item page has exactly one h1: its title.');
+        $this->assertStringContainsString('<p class="head">Hero</p>', $html);
+    }
 }
