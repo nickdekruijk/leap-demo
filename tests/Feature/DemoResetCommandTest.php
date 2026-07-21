@@ -45,6 +45,11 @@ class DemoResetCommandTest extends TestCase
         $demoUserId = DB::table('users')->where('email', config('demo.email'))->value('id');
         $this->assertDatabaseHas('leap_role_user', ['user_id' => $demoUserId, 'role_id' => 1]);
 
+        // DemoSeeder ran as the root seeder, so the demo's own copy is back and
+        // DatabaseSeeder's test account is not
+        $this->assertSame(6, DB::table('news')->count());
+        $this->assertDatabaseMissing('users', ['email' => 'test@example.com']);
+
         Storage::disk('public')->assertExists(config('demo.baseline_files')[0]);
         Storage::disk('public')->assertExists('uploads/.gitignore');
         Storage::disk('public')->assertMissing('uploads/graffiti.jpg');

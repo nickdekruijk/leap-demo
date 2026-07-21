@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Database\Seeders\DemoSeeder;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -47,7 +48,14 @@ class DemoReset extends Command
         // runs arms a fresh timer instead of being lost
         $cache->forget(config('demo.cache_key'));
 
-        $this->call('migrate:fresh', ['--seed' => true, '--force' => true]);
+        // DemoSeeder is the demo's entire state, so it replaces DatabaseSeeder as the
+        // root seeder here — test@example.com and the lorem sample content that the
+        // stock seeders create have no place on the public demo.
+        $this->call('migrate:fresh', [
+            '--seed' => true,
+            '--seeder' => DemoSeeder::class,
+            '--force' => true,
+        ]);
         $this->cleanStorage();
         $this->call('cache:clear');
 
