@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1b209c145c5dc090aa6d7a33103f9694",
+    "content-hash": "6fc2e0e9ff2205d51e16fff072d35dba",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3217,7 +3217,7 @@
         },
         {
             "name": "nickdekruijk/leap",
-            "version": "dev-master",
+            "version": "0.10.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap.git",
@@ -3250,7 +3250,6 @@
             "suggest": {
                 "nickdekruijk/leap-template": "Frontend website template scaffolding (leap:template, leap:content) — install with composer require --dev"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -9795,11 +9794,17 @@
         },
         {
             "name": "nickdekruijk/leap-template",
-            "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "../nickdekruijk/leap-template",
+            "version": "0.10.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nickdekruijk/leap-template.git",
                 "reference": "27e48d1fd9431635846f1cf7da3d978ba4d33e6c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/27e48d1fd9431635846f1cf7da3d978ba4d33e6c",
+                "reference": "27e48d1fd9431635846f1cf7da3d978ba4d33e6c",
+                "shasum": ""
             },
             "require": {
                 "laravel/framework": "^12.0|^13.0",
@@ -9831,16 +9836,7 @@
                     "NickDeKruijk\\LeapTemplate\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "NickDeKruijk\\LeapTemplate\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/phpunit"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -9858,9 +9854,11 @@
                 "scaffolding",
                 "template"
             ],
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/nickdekruijk/leap-template/issues",
+                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.12"
+            },
+            "time": "2026-07-20T16:51:03+00:00"
         },
         {
             "name": "nunomaduro/collision",
@@ -12123,19 +12121,9 @@
             "time": "2025-12-08T11:19:18+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "nickdekruijk/leap",
-            "version": "9999999-dev",
-            "alias": "0.10.14",
-            "alias_normalized": "0.10.14.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "nickdekruijk/leap": 20,
-        "nickdekruijk/leap-template": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
