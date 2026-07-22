@@ -14,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use NickDeKruijk\Leap\Models\Mediable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Concerns\ResolvesContentPaths;
@@ -125,11 +126,13 @@ class DemoSeederTest extends TestCase
             $this->assertTrue($section['active']);
             $this->assertNotEmpty($section['head']['nl']);
             $this->assertNotEmpty($section['head']['en']);
-            // A release lists its highlights, everything else opens with a paragraph
-            $opening = $model === News::class ? '<ul>' : '<p>';
-
-            $this->assertStringStartsWith($opening, $section['body']['nl']);
-            $this->assertStringStartsWith($opening, $section['body']['en']);
+            // A release with several changes lists them, one with a single change says
+            // it in prose; everything else opens with a paragraph
+            foreach (['nl', 'en'] as $locale) {
+                $model === News::class
+                    ? $this->assertMatchesRegularExpression('/^<(ul|p)>/', $section['body'][$locale])
+                    : $this->assertStringStartsWith('<p>', $section['body'][$locale]);
+            }
         }
     }
 
@@ -264,9 +267,12 @@ class DemoSeederTest extends TestCase
     {
         $titles = News::orderByDesc('published_at')->pluck('title');
 
-        // The package is named first, because Leap and its template release separately
-        $this->assertMatchesRegularExpression('/^(Leap|Template) unreleased — /', $titles->first());
-        $this->assertMatchesRegularExpression('/^(Leap|Template) \d+\.\d+\.\d+ — /', $titles->last());
+        // The title is the package and its version, nothing more: what the release did
+        // is the intro, where it reads as the card's text
+        $this->assertMatchesRegularExpression('/^(Leap|Template) unreleased$/', $titles->first());
+        $this->assertMatchesRegularExpression('/^(Leap|Template) \d+\.\d+\.\d+$/', $titles->last());
+
+        $this->assertNotEmpty(News::orderByDesc('published_at')->skip(1)->first()->intro);
 
         foreach (['Leap', 'Template'] as $package) {
             $this->assertNotEmpty($titles->filter(fn (string $t): bool => str_starts_with($t, $package)), "No releases of {$package}.");
@@ -281,6 +287,25 @@ class DemoSeederTest extends TestCase
     public function test_projects_are_ordered_by_hand(): void
     {
         $this->assertSame([1, 2, 3, 4, 5, 6, 7, 8], Project::orderBy('sort')->pluck('sort')->all());
+    }
+
+    /**
+     * Str::slug drops the dots, so 1.1.10 and 1.11.0 would both become "1110" and
+     * HasSlug would tell them apart with a -2 nobody can read. The seeder spells the
+     * version out with dashes instead.
+     */
+    public function test_a_release_slug_keeps_the_version_readable(): void
+    {
+        $slugs = News::all()->map(fn (News $item): string => $item->getTranslation('slug', 'en', false));
+
+        $this->assertSame($slugs->count(), $slugs->unique()->count(), 'Two releases share a slug.');
+
+        foreach ($slugs as $slug) {
+            $this->assertMatchesRegularExpression('/^(leap|template)-(unreleased|\d+(-\d+)+)$/', $slug);
+        }
+
+        // The very collision this guards against
+        $this->assertNotSame(Str::slug('Leap 1.1.10'), Str::slug('Leap 1-1-10'));
     }
 
     /**

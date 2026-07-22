@@ -801,9 +801,18 @@ php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt
             // the entities, since Blade escapes them again on the way out
             $headline = $this->plainMarkdown($highlights[0][1]);
 
+            // The headline is the intro: it is the one sentence saying what the release
+            // did, and it reads better as the card's text than crammed into its title
             $intro = $unreleased
                 ? 'Not out yet: this entry has no release date, so the demo dates it in the future — invisible on the site and waiting in the panel.'
-                : Str::limit($this->plainMarkdown($highlights[0][2]), 180);
+                : Str::limit($headline, 180);
+
+            // A release with a single change says it once, in prose; one with several
+            // lists them. Named $html, not $body: $body still holds the markdown that
+            // the section headings are read from below.
+            $html = count($highlights) > 1
+                ? '<ul><li>'.collect($highlights)->map(fn (array $h): string => $this->inlineMarkdown($h[1]))->implode('</li><li>').'</li></ul>'
+                : '<p>'.$this->inlineMarkdown($highlights[0][1]).' '.$this->inlineMarkdown(trim($highlights[0][2])).'</p>';
 
             // Keep a Changelog groups an entry under Added, Fixed, Changed and the
             // like — exactly the filter a changelog wants, and already in the file
@@ -811,14 +820,17 @@ php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt
 
             $items[] = [
                 'image' => 'abstract/0'.(count($items) % 8 + 1).'.jpg',
+                // Spelled out rather than left to Str::slug, which drops the dots: it
+                // would give 1.1.10 and 1.11.0 the same "1110" and leave HasSlug to
+                // tell them apart with a -2 nobody can read
+                'slug' => $this->bothLocales(Str::slug($package.' '.str_replace('.', ' ', $unreleased ? 'unreleased' : $version))),
                 'tags' => array_merge([$package], array_map(trim(...), $sections[1])),
                 'published' => $published,
-                'title' => $this->titleWithLanguageNote($package.' '.($unreleased ? 'unreleased' : $version).' — '.Str::limit($headline, 65)),
-                'intro' => $this->bothLocales($intro),
+                'title' => $this->bothLocales($package.' '.($unreleased ? 'unreleased' : $version)),
+                'intro' => $this->introWithLanguageNote($intro),
                 'head' => $this->bothLocales('In this release'),
                 'body' => $this->bothLocales(
-                    '<ul><li>'.collect($highlights)->map(fn (array $h): string => $this->inlineMarkdown($h[1]))->implode('</li><li>').'</li></ul>'
-                    .'<p><a href="https://github.com/nickdekruijk/'.strtolower($package === 'Template' ? 'leap-template' : 'leap').'/blob/master/CHANGELOG.md">The full entry in the changelog</a></p>'
+                    $html.'<p><a href="https://github.com/nickdekruijk/'.($package === 'Template' ? 'leap-template' : 'leap').'/blob/master/CHANGELOG.md">The full entry in the changelog</a></p>'
                 ),
             ];
         }
@@ -852,21 +864,20 @@ php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt
     }
 
     /**
-     * The same title in every locale, but the ones that are not the site's default get
-     * it flagged: a Dutch reader scanning the releases would otherwise be looking at a
-     * page of English with no explanation of why. The marker is translated, so a site
-     * with other locales says it in theirs — and falls back to the English words,
-     * which describe themselves.
+     * The card text, marked in every locale that is not the site's default. A Dutch
+     * reader is looking at English prose either way; saying so in front of it costs a
+     * word and saves the wondering. The title stays clean, and the overview above the
+     * cards explains why once, at length.
      *
      * @return array<string, string>
      */
-    protected function titleWithLanguageNote(string $title): array
+    protected function introWithLanguageNote(string $intro): array
     {
         $default = array_key_first(config('leap.locales') ?: ['en' => 'English']);
 
         return collect(array_keys(config('leap.locales') ?: ['en' => 'English']))
             ->mapWithKeys(fn (string $locale): array => [
-                $locale => $locale === $default ? $title : $title.' ('.__('English only', [], $locale).')',
+                $locale => $locale === $default ? $intro : '['.__('English only', [], $locale).'] '.$intro,
             ])->all();
     }
 
@@ -911,11 +922,12 @@ php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt
         }
 
         foreach ($this->releasesFromChangelog() ?: $this->content['news'] as $index => $item) {
-            $news = News::create($this->item($item) + [
+            $news = News::create($this->item($item) + array_filter([
                 // Released versions keep their real date; the one that is not out yet
                 // is dated relative to now, so it stays in the future after every reset
                 'published_at' => Carbon::parse($item['published']),
-            ]);
+                'slug' => $item['slug'] ?? null,
+            ]));
 
             $this->attachTags($news, $item['tags'] ?? []);
             $this->attachImage($news, $item['image'] ?? null, 'images', $item['title']);
