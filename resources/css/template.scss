@@ -532,6 +532,12 @@ a[role="button"],
         background: var(--bg);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
+        // The overlay opens 10vh from the top, so this is the rest of the viewport.
+        // A column with only the list scrolling keeps the field you are typing in
+        // where it is, however many results come back.
+        display: flex;
+        flex-direction: column;
+        max-height: calc(90vh - var(--space) * 2);
     }
 
     .search-input-row {
@@ -571,6 +577,9 @@ a[role="button"],
         list-style: none;
         margin-top: var(--space-s);
         border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+        overflow-y: auto;
+        // Keeps a flick at the end of the list from scrolling the page behind it
+        overscroll-behavior: contain;
 
         li + li { border-top: 1px solid color-mix(in srgb, var(--text) 8%, transparent); }
 
@@ -604,15 +613,19 @@ a[role="button"],
         &:not(.active) { opacity: 0; }
         &.active { z-index: 1; }
 
+        // Taken out of the flow: a full-height image would otherwise push the content
+        // container below the slide, where the slider's overflow:hidden clips it away.
         img,
         video {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
         // Anchor the content to the padded container, not the full-bleed slide
-        .main-width { position: relative; height: 100%; }
+        .main-width { position: relative; z-index: 1; height: 100%; }
 
         .slide-content {
             position: absolute;
@@ -626,6 +639,15 @@ a[role="button"],
         // Placeholder slides have a dark gradient → white text for contrast, unless the
         // editor switched the white text off on that slide.
         &.slide-placeholder .slide-content:not(.dark-text) { color: #fff; }
+
+        // A photo has no such gradient, so white text washes out over its lighter areas.
+        // Scrim the bottom, where the content sits — above the image, below .main-width.
+        &:not(.slide-placeholder):has(.slide-content.white-text)::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 60%);
+        }
     }
 
     .slider-dots {

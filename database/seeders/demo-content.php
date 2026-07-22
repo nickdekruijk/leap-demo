@@ -1,268 +1,403 @@
 <?php
 
 /**
- * Dutch and English copy for the demo site's content items, kept out of DemoSeeder
- * so the seeder stays mechanism. Every item has the same shape — title, intro and
- * the head/body of its one text section — so the seeder only has to know it once.
+ * The demo's content items, in English and Dutch. The demo documents itself: every
+ * item says what it demonstrates and where to change it in the admin panel, because
+ * this site is a starting point for your own project rather than a finished website.
  *
- * The events are split into the two buckets the seeder dates differently: an item
- * under "future" announces something, one under "past" looks back at it.
+ * Keys stay news/events/projects — those are the models — while the overview pages
+ * they hang under are titled Releases, Agenda and Building blocks.
+ *
+ * News carries a `published` date: an absolute one for a released version, a relative
+ * one for the version that is not out yet. Two releases can share a day, so the times
+ * are part of it — without them the order between them is whatever the database
+ * happens to return.
  */
 return [
 
+    // ── Releases ─────────────────────────────────────────────────────────────
+    // The real Leap changelog. The first one is dated in the future on purpose.
     'news' => [
         [
-            'image' => 'news/werkplaats-verhuisd.jpg',
-            'title' => ['nl' => 'De werkplaats is verhuisd', 'en' => 'The workshop has moved'],
-            'intro' => ['nl' => 'Vanaf deze maand staan de machines twee straten verderop, in een hal met daglicht en ruimte om te groeien.', 'en' => 'From this month the machines stand two streets away, in a hall with daylight and room to grow.'],
-            'head' => ['nl' => 'Meer ruimte, meer licht', 'en' => 'More room, more light'],
+            'image' => 'abstract/01.jpg',
+            'published' => '+10 days',
+            'title' => ['en' => '0.11.0 — not published yet', 'nl' => '0.11.0 — nog niet gepubliceerd'],
+            'intro' => [
+                'en' => 'You are not seeing this on the website: its publication date is in the future. Log in and it is right there in the admin, waiting.',
+                'nl' => 'Op de website zie je dit niet: de publicatiedatum ligt in de toekomst. Log in en het staat gewoon in het paneel te wachten.',
+            ],
+            'head' => ['en' => 'Write now, publish later', 'nl' => 'Nu schrijven, later publiceren'],
             'body' => [
-                'nl' => '<p>Na zeven jaar op de oude plek was de werkplaats uit haar jasje gegroeid. De nieuwe hal is bijna twee keer zo groot en heeft ramen op het noorden, wat prettig werkt bij het beoordelen van kleur.</p><p>De verhuizing is in één weekend gedaan, met dank aan de vijftien vrijwilligers die kwamen sjouwen.</p>',
-                'en' => '<p>After seven years in the old place, the workshop had outgrown itself. The new hall is nearly twice the size and has north-facing windows, which helps when judging colour.</p><p>The move was done in a single weekend, thanks to the fifteen volunteers who came to carry.</p>',
+                'en' => '<p>The news archetype treats <code>published_at</code> as a gate: an item dated in the future is invisible to visitors and stays editable in the panel until that moment passes. No queue, no cron — the query simply does not return it yet.</p><p>Open <em>Releases</em> in the admin to find this item, then move its date back to today and watch it appear on the site.</p>',
+                'nl' => '<p>Het nieuws-archetype gebruikt <code>published_at</code> als poort: een item met een datum in de toekomst is onzichtbaar voor bezoekers en blijft in het paneel bewerkbaar tot dat moment voorbij is. Geen queue, geen cron — de query geeft het simpelweg nog niet terug.</p><p>Open <em>Releases</em> in het paneel om dit item te vinden, zet de datum op vandaag en zie het op de site verschijnen.</p>',
             ],
         ],
         [
-            'image' => 'news/zomerprogramma.jpg',
-            'title' => ['nl' => 'Zomerprogramma is bekend', 'en' => 'Summer programme announced'],
-            'intro' => ['nl' => 'Acht workshops, twee lezingen en elke donderdag een open avond waarop iedereen zonder aanmelding binnen kan lopen.', 'en' => 'Eight workshops, two talks and an open evening every Thursday that anyone can walk into without booking.'],
-            'head' => ['nl' => 'Wat er te doen is', 'en' => 'What is on'],
+            'image' => 'abstract/02.jpg',
+            'published' => '2026-07-21 11:20',
+            'title' => ['en' => '0.10.15 — a switched-off section keeps the carousel closed', 'nl' => '0.10.15 — een uitgezette sectie houdt de carrousel dicht'],
+            'intro' => [
+                'en' => 'A carousel is a run of slide sections: the first opens the wrapper, the last closes it. Deactivating the last slide used to take the closing tag with it.',
+                'nl' => 'Een carrousel is een reeks slide-secties: de eerste opent de wrapper, de laatste sluit hem. Het uitzetten van de laatste slide nam dat sluittag mee.',
+            ],
+            'head' => ['en' => 'What changed', 'nl' => 'Wat er veranderde'],
             'body' => [
-                'nl' => '<p>Het zwaartepunt ligt dit jaar op druktechnieken: zeefdruk, risografie en een korte serie over letterpers. Voor wie liever met hout werkt zijn er twee zaterdagen ingeruimd.</p><p>Aanmelden kan per workshop; de open avonden zijn vrij toegankelijk.</p>',
-                'en' => '<p>The focus this year is on printing: screen printing, risograph and a short series on letterpress. For those who prefer wood, two Saturdays have been set aside.</p><p>Workshops are booked individually; the open evenings are free to attend.</p>',
+                'en' => '<p><code>sections()</code> now drops inactive sections itself, before the run is marked, so a template can no longer get the order wrong. Templates that filtered on <code>active</code> themselves keep working; the filter is simply redundant now.</p>',
+                'nl' => '<p><code>sections()</code> gooit inactieve secties nu zelf weg, vóórdat de reeks gemarkeerd wordt, zodat een template de volgorde niet meer verkeerd kan krijgen. Templates die zelf op <code>active</code> filterden blijven werken; dat filter is nu alleen overbodig.</p>',
             ],
         ],
         [
-            'image' => 'news/nieuwe-zeefdrukpers.jpg',
-            'title' => ['nl' => 'Nieuwe zeefdrukpers in gebruik', 'en' => 'New screen printing press in use'],
-            'intro' => ['nl' => 'De handpers uit 1978 gaat met pensioen. Zijn opvolger drukt tot A1 en is een stuk vriendelijker voor de rug.', 'en' => 'The 1978 hand press is retiring. Its successor prints up to A1 and is a good deal kinder to the back.'],
-            'head' => ['nl' => 'Groter formaat, minder tillen', 'en' => 'Bigger format, less lifting'],
+            'image' => 'abstract/03.jpg',
+            'published' => '2026-07-20 16:45',
+            'title' => ['en' => '0.10.14 — showIf() reads its trigger in the right language', 'nl' => '0.10.14 — showIf() leest zijn trigger in de juiste taal'],
+            'intro' => [
+                'en' => 'A translatable field is stored per locale, and in JavaScript an object is always truthy — so a conditional field appeared the moment its trigger was touched in any language.',
+                'nl' => 'Een vertaalbaar veld wordt per taal opgeslagen, en in JavaScript is een object altijd waar — dus een voorwaardelijk veld verscheen zodra de trigger in wélke taal dan ook was aangeraakt.',
+            ],
+            'head' => ['en' => 'Also in this release', 'nl' => 'Ook in deze release'],
             'body' => [
-                'nl' => '<p>De oude pers blijft staan voor kleine oplagen — hij doet het nog prima en veel bezoekers hebben er hun eerste druk op gemaakt.</p><p>Op de nieuwe pers passen affiches tot A1. De eerste serie hangt inmiddels in de gang.</p>',
-                'en' => '<p>The old press stays put for small runs — it still works fine and many visitors made their first print on it.</p><p>The new press takes posters up to A1. The first series is already hanging in the corridor.</p>',
+                'en' => '<p>A hidden field no longer leaves a gap where its row was, and <code>showWhenTrue()</code> was renamed to <code>showIf()</code> — the old name promised a boolean while any truthy value has always shown the field. The old name stays as a deprecated alias.</p>',
+                'nl' => '<p>Een verborgen veld laat geen gat meer achter waar zijn rij stond, en <code>showWhenTrue()</code> heet nu <code>showIf()</code> — de oude naam beloofde een boolean terwijl elke waarheidsachtige waarde het veld altijd al toonde. De oude naam blijft als verouderd alias bestaan.</p>',
             ],
         ],
         [
-            'image' => 'news/voorjaarsseizoen.jpg',
-            'title' => ['nl' => 'Terugblik op het voorjaarsseizoen', 'en' => 'Looking back at the spring season'],
-            'intro' => ['nl' => 'Ruim vierhonderd bezoekers, negentien workshops en een markt die drukker was dan we hadden durven hopen.', 'en' => 'Over four hundred visitors, nineteen workshops and a market busier than we had dared hope.'],
-            'head' => ['nl' => 'Het seizoen in cijfers', 'en' => 'The season in numbers'],
+            'image' => 'abstract/04.jpg',
+            'published' => '2026-07-20 09:30',
+            'title' => ['en' => '0.10.13 — leap:user --role attaches a role without asking', 'nl' => '0.10.13 — leap:user --role koppelt een rol zonder te vragen'],
+            'intro' => [
+                'en' => 'A user without a role sees nothing in the panel, and the only way to fix that was a question a scripted install has nobody to answer.',
+                'nl' => 'Een gebruiker zonder rol ziet niets in het paneel, en dat was alleen te verhelpen met een vraag die een geautomatiseerde installatie aan niemand kan stellen.',
+            ],
+            'head' => ['en' => 'How it works', 'nl' => 'Hoe het werkt'],
             'body' => [
-                'nl' => '<p>Opvallend was de opkomst bij de doordeweekse avonden: die zaten vaker vol dan de zaterdagen. Voor het najaar verschuiven we daarom een deel van het programma naar de week.</p>',
-                'en' => '<p>What stood out was the turnout on weekday evenings: they filled up more often than the Saturdays. For the autumn we are therefore moving part of the programme midweek.</p>',
+                'en' => '<p>Bare <code>--role</code> takes the first role, <code>--role=superuser</code> or <code>--role=1</code> names one, and an unknown name fails with a message instead of leaving an account that cannot log into anything.</p>',
+                'nl' => '<p>Kaal <code>--role</code> pakt de eerste rol, <code>--role=superuser</code> of <code>--role=1</code> wijst er één aan, en een onbekende naam faalt met een melding in plaats van een account achter te laten dat nergens in kan.</p>',
             ],
         ],
         [
-            'image' => 'news/vrijwilligers-gezocht.jpg',
-            'title' => ['nl' => 'Vrijwilligers gezocht voor de weekendopening', 'en' => 'Volunteers wanted for weekend opening'],
-            'intro' => ['nl' => 'We willen op zondagmiddag open, en daarvoor zoeken we een handvol mensen die het leuk vindt om gastheer te zijn.', 'en' => 'We want to open on Sunday afternoons, and we are looking for a handful of people who enjoy playing host.'],
-            'head' => ['nl' => 'Wat het inhoudt', 'en' => 'What it involves'],
+            'image' => 'abstract/05.jpg',
+            'published' => '2026-07-17 14:10',
+            'title' => ['en' => '0.10.12 — an index filters by id, not by rendered text', 'nl' => '0.10.12 — een index filtert op id, niet op gerenderde tekst'],
+            'intro' => [
+                'en' => 'A pivot column renders as its values joined into one string, and the filter was built from that string — so an article with two tags offered the pair as a filter option of its own.',
+                'nl' => 'Een pivot-kolom rendert als zijn waarden aan elkaar geplakt, en het filter werd uit die tekst opgebouwd — dus een artikel met twee tags bood dat paar aan als eigen filteroptie.',
+            ],
+            'head' => ['en' => 'Four fixes of the same shape', 'nl' => 'Vier fixes van dezelfde vorm'],
             'body' => [
-                'nl' => '<p>Een dienst duurt vier uur: koffie zetten, bezoekers wegwijs maken en aan het eind de deur op slot. Ervaring met de machines is niet nodig — die krijg je vanzelf.</p><p>Loop gerust een keer mee voor je besluit.</p>',
-                'en' => '<p>A shift lasts four hours: making coffee, showing visitors around and locking up at the end. Experience with the machines is not needed — that comes along the way.</p><p>Feel free to tag along once before you decide.</p>',
+                'en' => '<p>All four came from asking the database for a translatable attribute by column name and getting the raw json back: searching matched the locale keys, <code>unique</code> validated the json, and ordering sorted by it. Each now speaks to the text inside instead.</p>',
+                'nl' => '<p>Alle vier kwamen voort uit het opvragen van een vertaalbaar attribuut op kolomnaam, waarbij de ruwe json terugkwam: zoeken matchte op de taalsleutels, <code>unique</code> valideerde de json, en sorteren ordende erop. Elk kijkt nu naar de tekst erin.</p>',
             ],
         ],
         [
-            'image' => 'news/samenwerking-bibliotheek.jpg',
-            'title' => ['nl' => 'Samenwerking met de bibliotheek', 'en' => 'Working together with the library'],
-            'intro' => ['nl' => 'Vanaf het najaar staat er een kleine drukpers in de bibliotheek, en verzorgen wij daar maandelijks een workshop.', 'en' => 'From autumn a small press will stand in the library, and we will run a monthly workshop there.'],
-            'head' => ['nl' => 'Buiten de eigen muren', 'en' => 'Beyond our own walls'],
+            'image' => 'abstract/06.jpg',
+            'published' => '2026-07-16 10:05',
+            'title' => ['en' => '0.10.11 — index grouping only when it makes sense', 'nl' => '0.10.11 — index-groepering alleen wanneer het klopt'],
+            'intro' => [
+                'en' => 'The group header is the first letter of the sorted column, which says nothing at all when that column is a date or a number.',
+                'nl' => 'De groepskop is de eerste letter van de gesorteerde kolom, en die zegt helemaal niets wanneer die kolom een datum of getal is.',
+            ],
+            'head' => ['en' => 'Older releases', 'nl' => 'Oudere releases'],
             'body' => [
-                'nl' => '<p>Niet iedereen weet de werkplaats te vinden, terwijl de bibliotheek voor veel mensen een vanzelfsprekende plek is. Door daar te gaan staan, bereiken we een publiek dat anders nooit een drukpers van dichtbij ziet.</p>',
-                'en' => '<p>Not everyone finds their way to the workshop, while the library is an obvious place for many. By setting up there, we reach people who would otherwise never see a press up close.</p>',
+                'en' => '<p>The full history lives in the <a href="https://github.com/nickdekruijk/leap/blob/master/CHANGELOG.md">changelog on GitHub</a>. These six items exist to show what the news archetype does with dates — replace them with your own.</p>',
+                'nl' => '<p>De volledige geschiedenis staat in de <a href="https://github.com/nickdekruijk/leap/blob/master/CHANGELOG.md">changelog op GitHub</a>. Deze zes items bestaan om te tonen wat het nieuws-archetype met datums doet — vervang ze door je eigen berichten.</p>',
             ],
         ],
     ],
 
+    // ── Agenda ───────────────────────────────────────────────────────────────
+    // Every item names the date or time case it demonstrates.
     'events' => [
 
         'future' => [
             [
-                'image' => 'events/open-werkplaats.jpg',
-                'title' => ['nl' => 'Open werkplaats', 'en' => 'Open workshop'],
-                'intro' => ['nl' => 'Loop binnen, kijk rond en probeer een techniek uit. Geen aanmelding, geen kosten.', 'en' => 'Walk in, look around and try a technique. No booking, no charge.'],
-                'head' => ['nl' => 'Zomaar binnenlopen', 'en' => 'Just walk in'],
+                'image' => 'abstract/07.jpg',
+                'tags' => ['Dates & times'],
+                'title' => ['en' => 'An ordinary event, with a start and an end', 'nl' => 'Een gewoon event, met begin- en eindtijd'],
+                'intro' => [
+                    'en' => 'The everyday case: one date, two times. The card shows them side by side and the detail page writes the weekday out in full.',
+                    'nl' => 'Het alledaagse geval: één datum, twee tijden. De kaart toont ze naast elkaar en de detailpagina schrijft de weekdag voluit.',
+                ],
+                'head' => ['en' => 'What to look at', 'nl' => 'Waar je op moet letten'],
                 'body' => [
-                    'nl' => '<p>Elke machine staat aan en bij elke machine staat iemand die er raad mee weet. Neem gerust eigen werk mee als je ergens op vastloopt.</p>',
-                    'en' => '<p>Every machine is running and beside every machine stands someone who knows their way around it. Bring your own work if you are stuck on something.</p>',
+                    'en' => '<p>Open this item in the admin and you will find a date field and two time fields, nothing more. Everything else — the ordering, the upcoming filter, the moment it drops off the list — is derived from them.</p>',
+                    'nl' => '<p>Open dit item in het paneel en je vindt een datumveld en twee tijdvelden, meer niet. Al het andere — de volgorde, het aankomend-filter, het moment waarop het van de lijst valt — wordt daaruit afgeleid.</p>',
                 ],
             ],
             [
-                'image' => 'events/workshop-zeefdrukken.jpg',
-                'title' => ['nl' => 'Workshop zeefdrukken', 'en' => 'Screen printing workshop'],
-                'intro' => ['nl' => 'In één middag van ontwerp naar een eigen affiche in twee kleuren, gedrukt op de grote pers.', 'en' => 'From design to your own two-colour poster in a single afternoon, printed on the big press.'],
-                'head' => ['nl' => 'Wat je leert', 'en' => 'What you will learn'],
+                'image' => 'abstract/08.jpg',
+                'tags' => ['Dates & times'],
+                'title' => ['en' => 'All day: no times at all', 'nl' => 'Hele dag: helemaal geen tijden'],
+                'intro' => [
+                    'en' => 'Leave both time fields empty and the event lasts the whole day. It stays listed as upcoming until that day is over.',
+                    'nl' => 'Laat beide tijdvelden leeg en het event duurt de hele dag. Het blijft als aankomend in de lijst tot die dag voorbij is.',
+                ],
+                'head' => ['en' => 'Derived, not stored', 'nl' => 'Afgeleid, niet opgeslagen'],
                 'body' => [
-                    'nl' => '<p>Je belicht je eigen zeef, drukt een oplage van tien en neemt ze aan het eind van de middag mee naar huis. Materiaal zit bij de prijs in.</p><p>Maximaal acht deelnemers, dus er is ruim tijd per persoon.</p>',
-                    'en' => '<p>You expose your own screen, print a run of ten and take them home at the end of the afternoon. Materials are included.</p><p>Eight participants at most, so there is plenty of time per person.</p>',
+                    'en' => '<p>The model keeps an <code>ends_at</code> column in step with the date and times on every save, so the overview can ask one simple question: is this over yet?</p>',
+                    'nl' => '<p>Het model houdt bij elke opslag een <code>ends_at</code>-kolom in de pas met de datum en tijden, zodat het overzicht één simpele vraag kan stellen: is dit al voorbij?</p>',
                 ],
             ],
             [
-                'image' => 'events/lezing-kleur.jpg',
-                'title' => ['nl' => 'Lezing: kleur in de openbare ruimte', 'en' => 'Talk: colour in public space'],
-                'intro' => ['nl' => 'Waarom is een stad grijs, en wat gebeurt er als je daar bewust van afwijkt?', 'en' => 'Why is a city grey, and what happens when you deliberately depart from that?'],
-                'head' => ['nl' => 'Over de spreker', 'en' => 'About the speaker'],
+                'image' => 'abstract/01.jpg',
+                'tags' => ['Dates & times'],
+                'title' => ['en' => 'A start time only — it runs until the end of the day', 'nl' => 'Alleen een begintijd — het loopt tot het eind van de dag'],
+                'intro' => [
+                    'en' => 'An opening, a drink, anything nobody commits an end to. The card shows the start on its own, without a dash trailing off into nothing.',
+                    'nl' => 'Een opening, een borrel, alles waar niemand een eindtijd aan vastlegt. De kaart toont alleen de begintijd, zonder streepje dat nergens op uitkomt.',
+                ],
+                'head' => ['en' => 'Why it matters', 'nl' => 'Waarom dat uitmaakt'],
                 'body' => [
-                    'nl' => '<p>Een uur over kleurgebruik in straten, gebouwen en bewegwijzering, met voorbeelden uit binnen- en buitenland. Na afloop is er ruimte voor vragen en een drankje.</p>',
-                    'en' => '<p>An hour on the use of colour in streets, buildings and signage, with examples from home and abroad. Afterwards there is room for questions and a drink.</p>',
+                    'en' => '<p>Without an end time the event is treated as running until midnight, so it does not disappear from the overview halfway through its own afternoon.</p>',
+                    'nl' => '<p>Zonder eindtijd geldt het event als lopend tot middernacht, zodat het niet halverwege zijn eigen middag uit het overzicht verdwijnt.</p>',
                 ],
             ],
             [
-                'image' => 'events/repair-cafe.jpg',
-                'title' => ['nl' => 'Repair café', 'en' => 'Repair café'],
-                'intro' => ['nl' => 'Neem mee wat kapot is. Samen kijken we of het weer aan de praat te krijgen is.', 'en' => 'Bring whatever is broken. Together we will see if it can be got going again.'],
-                'head' => ['nl' => 'Wat we kunnen maken', 'en' => 'What we can fix'],
+                'image' => 'abstract/02.jpg',
+                'tags' => ['Dates & times'],
+                'title' => ['en' => 'An end before its start — it finishes the next day', 'nl' => 'Een eind vóór het begin — het loopt door tot de volgende dag'],
+                'intro' => [
+                    'en' => 'Eight in the evening until half past two. The model reads an end at or before the start as running past midnight.',
+                    'nl' => 'Van acht uur \'s avonds tot half drie. Het model leest een eind op of vóór het begin als doorlopend over middernacht.',
+                ],
+                'head' => ['en' => 'One rule, no extra field', 'nl' => 'Eén regel, geen extra veld'],
                 'body' => [
-                    'nl' => '<p>Kleine elektronica, houten meubels, textiel en fietsen. Wat we niet kunnen repareren, halen we uit elkaar — ook dat leert iets.</p>',
-                    'en' => '<p>Small electronics, wooden furniture, textiles and bicycles. Whatever we cannot repair, we take apart — that teaches something too.</p>',
+                    'en' => '<p>There is no "ends next day" switch to forget: the times say it themselves. This is the kind of edge case a starter template is worth having already solved.</p>',
+                    'nl' => '<p>Er is geen "eindigt volgende dag"-schakelaar om te vergeten: de tijden zeggen het zelf. Precies het soort randgeval waarvan het prettig is dat een starttemplate het al heeft opgelost.</p>',
                 ],
             ],
             [
-                'image' => 'events/vrijdagmiddagborrel.jpg',
-                'title' => ['nl' => 'Vrijdagmiddagborrel', 'en' => 'Friday afternoon drinks'],
-                'intro' => ['nl' => 'De week afsluiten in de hal, met muziek en zo lang als het duurt.', 'en' => 'Closing the week in the hall, with music, for as long as it lasts.'],
-                'head' => ['nl' => 'Tot laat', 'en' => 'Until late'],
+                'image' => 'abstract/03.jpg',
+                'tags' => ['Content'],
+                'title' => ['en' => 'Tagged, so a fixed row can pick it out', 'nl' => 'Getagd, zodat een vaste rij het eruit kan pikken'],
+                'intro' => [
+                    'en' => 'A card row can be narrowed to a single tag. This item carries the tag the row on Sections › Options is fixed to.',
+                    'nl' => 'Een kaartenrij kan tot één tag beperkt worden. Dit item draagt de tag waarop de rij op Secties › Opties is vastgezet.',
+                ],
+                'head' => ['en' => 'Where to set it', 'nl' => 'Waar je dat instelt'],
                 'body' => [
-                    'nl' => '<p>Geen programma, geen eindtijd. Er is soep en iemand neemt een platenspeler mee.</p>',
-                    'en' => '<p>No programme, no closing time. There is soup and someone is bringing a record player.</p>',
+                    'en' => '<p>In the page editor, every card row has a <em>tag</em> select next to its layout and column count. Leave it empty and the row shows everything.</p>',
+                    'nl' => '<p>In de pagina-editor heeft elke kaartenrij een <em>tag</em>-keuze naast de weergave en het aantal kolommen. Laat hem leeg en de rij toont alles.</p>',
                 ],
             ],
             [
-                'image' => 'events/drukmarathon.jpg',
-                'title' => ['nl' => 'Nachtelijke drukmarathon', 'en' => 'Overnight print marathon'],
-                'intro' => ['nl' => 'Van de avond tot diep in de nacht doorwerken aan één gezamenlijke oplage.', 'en' => 'Working from evening deep into the night on one shared print run.'],
-                'head' => ['nl' => 'Hoe het werkt', 'en' => 'How it works'],
+                'image' => 'abstract/04.jpg',
+                'tags' => ['Media'],
+                'title' => ['en' => 'Two events share one photograph', 'nl' => 'Twee events delen één afbeelding'],
+                'intro' => [
+                    'en' => 'Media is stored once and attached wherever it is needed, so the same file can sit on a dozen records without a dozen copies.',
+                    'nl' => 'Media wordt één keer opgeslagen en gekoppeld waar het nodig is, dus hetzelfde bestand kan op een dozijn records zitten zonder een dozijn kopieën.',
+                ],
+                'head' => ['en' => 'The file manager', 'nl' => 'De bestandsbeheerder'],
                 'body' => [
-                    'nl' => '<p>Iedereen ontwerpt één laag; aan het eind van de nacht is er een affiche waar alle deelnemers aan hebben meegewerkt. Slaapzak meenemen mag.</p>',
-                    'en' => '<p>Everyone designs one layer; by the end of the night there is a poster every participant worked on. Bringing a sleeping bag is allowed.</p>',
+                    'en' => '<p>Upload once, then pick the same file again from any media field. Crop it, set a focus point or let AI write its alt text, and every record showing it follows along.</p>',
+                    'nl' => '<p>Upload één keer en kies daarna hetzelfde bestand bij elk mediaveld. Snijd het bij, zet een focuspunt of laat AI de alt-tekst schrijven, en elk record dat het toont gaat mee.</p>',
                 ],
             ],
         ],
 
         'past' => [
             [
-                'image' => 'events/voorjaarsmarkt.jpg',
-                'title' => ['nl' => 'Voorjaarsmarkt', 'en' => 'Spring market'],
-                'intro' => ['nl' => 'Dertig makers, twee straten en het mooiste weer dat we ooit voor een markt hebben gehad.', 'en' => 'Thirty makers, two streets and the best weather we have ever had for a market.'],
-                'head' => ['nl' => 'Hoe het was', 'en' => 'How it went'],
+                'image' => 'abstract/05.jpg',
+                'tags' => ['Content'],
+                'title' => ['en' => 'Past events are hidden by default', 'nl' => 'Afgelopen events zijn standaard verborgen'],
+                'intro' => [
+                    'en' => 'An agenda answers "what is coming", so a card row of an event type shows upcoming items and nothing else unless you say otherwise.',
+                    'nl' => 'Een agenda beantwoordt "wat komt eraan", dus een kaartenrij van een event-type toont alleen aankomende items, tenzij je iets anders instelt.',
+                ],
+                'head' => ['en' => 'You are looking at one now', 'nl' => 'Je kijkt er nu naar één'],
                 'body' => [
-                    'nl' => '<p>Halverwege de middag was bij verschillende kramen de voorraad op. Volgend jaar staan we een straat verder door, zodat het minder vol loopt bij de ingang.</p>',
-                    'en' => '<p>By mid-afternoon several stalls had sold out. Next year we will run one street further along, so it gets less crowded at the entrance.</p>',
+                    'en' => '<p>The row that brought you here has its <em>period</em> set to past, which is the only reason these six items are visible at all. Set it back to upcoming and this whole list disappears.</p>',
+                    'nl' => '<p>De rij die je hier bracht heeft <em>periode</em> op verleden staan, en alleen daarom zijn deze zes items zichtbaar. Zet hem terug op aankomend en de hele lijst verdwijnt.</p>',
                 ],
             ],
             [
-                'image' => 'events/workshop-boekbinden.jpg',
-                'title' => ['nl' => 'Workshop boekbinden', 'en' => 'Bookbinding workshop'],
-                'intro' => ['nl' => 'Twaalf deelnemers gingen naar huis met een eigen genaaid schetsboek.', 'en' => 'Twelve participants went home with a hand-sewn sketchbook of their own.'],
-                'head' => ['nl' => 'Het resultaat', 'en' => 'The result'],
+                'image' => 'abstract/06.jpg',
+                'tags' => ['Content'],
+                'title' => ['en' => 'Or show both, upcoming first', 'nl' => 'Of toon beide, aankomend eerst'],
+                'intro' => [
+                    'en' => 'The third setting lists what is coming and then what has been, in one row, which suits an archive page better than two separate lists.',
+                    'nl' => 'De derde instelling toont eerst wat komt en dan wat is geweest, in één rij — dat past beter bij een archiefpagina dan twee losse lijsten.',
+                ],
+                'head' => ['en' => 'Three values', 'nl' => 'Drie waarden'],
                 'body' => [
-                    'nl' => '<p>De Japanse bindwijze bleek makkelijker aan te leren dan gedacht. Er komt een vervolg waarin we met een harde kaft werken.</p>',
-                    'en' => '<p>The Japanese binding turned out to be easier to learn than expected. A follow-up is coming in which we work with a hard cover.</p>',
+                    'en' => '<p>Upcoming, past, both. The select only appears on rows of a content type that has dates, because it would mean nothing on the others.</p>',
+                    'nl' => '<p>Aankomend, verleden, beide. De keuze verschijnt alleen bij rijen van een content-type met datums, omdat hij bij de andere niets zou betekenen.</p>',
                 ],
             ],
             [
-                'image' => 'events/rondleiding-scholen.jpg',
-                'title' => ['nl' => 'Rondleiding voor scholen', 'en' => 'School tour'],
-                'intro' => ['nl' => 'Twee brugklassen langs de machines, met aan het eind een eigen druk om mee te nemen.', 'en' => 'Two first-year classes along the machines, each leaving with a print of their own.'],
-                'head' => ['nl' => 'Wat opviel', 'en' => 'What stood out'],
+                'image' => 'abstract/07.jpg',
+                'tags' => ['Dates & times'],
+                'title' => ['en' => 'A past all-day event', 'nl' => 'Een afgelopen event van een hele dag'],
+                'intro' => [
+                    'en' => 'The same rules run backwards: no times means the whole day, and the day is over, so here it is in the past list.',
+                    'nl' => 'Dezelfde regels werken terug: geen tijden betekent de hele dag, en die dag is voorbij, dus staat het hier in de verleden-lijst.',
+                ],
+                'head' => ['en' => 'Ordering', 'nl' => 'Volgorde'],
                 'body' => [
-                    'nl' => '<p>De vraag die het vaakst terugkwam: waarom zou je iets drukken als je het ook kunt printen? Daar is een middag over te praten.</p>',
-                    'en' => '<p>The question that came back most: why print something by hand when a printer can do it? That is an afternoon of conversation in itself.</p>',
+                    'en' => '<p>Past items are listed most recent first, which is almost always what an archive wants and never what an agenda wants.</p>',
+                    'nl' => '<p>Afgelopen items staan met de meest recente eerst, wat een archief vrijwel altijd wil en een agenda nooit.</p>',
                 ],
             ],
             [
-                'image' => 'events/lezing-duurzaam-ontwerpen.jpg',
-                'title' => ['nl' => 'Lezing: duurzaam ontwerpen', 'en' => 'Talk: designing sustainably'],
-                'intro' => ['nl' => 'Over materiaalkeuze, levensduur en de vraag of iets überhaupt gemaakt moet worden.', 'en' => 'On choosing materials, lifespan and whether a thing needs making at all.'],
-                'head' => ['nl' => 'Nagesprek', 'en' => 'Afterwards'],
+                'image' => 'abstract/08.jpg',
+                'tags' => ['Dates & times'],
+                'title' => ['en' => 'An evening that ran past midnight', 'nl' => 'Een avond die over middernacht liep'],
+                'intro' => [
+                    'en' => 'The same next-day rule as its upcoming counterpart, seen from the other side of the date.',
+                    'nl' => 'Dezelfde volgende-dag-regel als zijn aankomende tegenhanger, gezien vanaf de andere kant van de datum.',
+                ],
+                'head' => ['en' => 'Still one date', 'nl' => 'Nog steeds één datum'],
                 'body' => [
-                    'nl' => '<p>Het nagesprek duurde langer dan de lezing zelf. Een deel van de aanwezigen werkt inmiddels aan een gezamenlijk materialendepot.</p>',
-                    'en' => '<p>The discussion afterwards lasted longer than the talk itself. Some of those present are now working on a shared materials depot.</p>',
+                    'en' => '<p>An event has one date. Everything about how long it lasts is in the times, which keeps the editor simple and the queries honest.</p>',
+                    'nl' => '<p>Een event heeft één datum. Alles over hoe lang het duurt zit in de tijden, wat de editor eenvoudig houdt en de queries eerlijk.</p>',
                 ],
             ],
             [
-                'image' => 'events/winterexpositie.jpg',
-                'title' => ['nl' => 'Winterexpositie', 'en' => 'Winter exhibition'],
-                'intro' => ['nl' => 'Werk van vijftien makers die het afgelopen jaar in de werkplaats te vinden waren.', 'en' => 'Work by fifteen makers who spent the past year in the workshop.'],
-                'head' => ['nl' => 'De tentoonstelling', 'en' => 'The exhibition'],
+                'image' => 'abstract/01.jpg',
+                'tags' => ['Dates & times'],
+                'title' => ['en' => 'Half a year ago', 'nl' => 'Een half jaar geleden'],
+                'intro' => [
+                    'en' => 'The set is spread across the year so the past list has something to sort, and so the date formatting can be seen in more than one month.',
+                    'nl' => 'De reeks is over het jaar verspreid zodat de verleden-lijst iets te sorteren heeft, en de datumopmaak in meer dan één maand te zien is.',
+                ],
+                'head' => ['en' => 'Dates in two languages', 'nl' => 'Datums in twee talen'],
                 'body' => [
-                    'nl' => '<p>Drie weken lang hing de hal vol: affiches, meubels, keramiek en een serie foto\'s van de verbouwing.</p>',
-                    'en' => '<p>For three weeks the hall was full: posters, furniture, ceramics and a series of photographs of the rebuilding.</p>',
+                    'en' => '<p>Month and weekday names follow the language you are reading. Switch to Dutch in the top corner and this date changes along with the rest of the page.</p>',
+                    'nl' => '<p>Maand- en weekdagnamen volgen de taal die je leest. Schakel rechtsboven naar Engels en deze datum verandert mee met de rest van de pagina.</p>',
                 ],
             ],
             [
-                'image' => 'events/nieuwjaarsontbijt.jpg',
-                'title' => ['nl' => 'Nieuwjaarsontbijt', 'en' => 'New year\'s breakfast'],
-                'intro' => ['nl' => 'Het jaar beginnen aan één lange tafel, met plannen die nog nergens op vastzitten.', 'en' => 'Starting the year at one long table, with plans not yet pinned to anything.'],
-                'head' => ['nl' => 'Aan tafel', 'en' => 'At the table'],
+                'image' => 'abstract/02.jpg',
+                'tags' => ['Dates & times'],
+                'title' => ['en' => 'The oldest item in the set', 'nl' => 'Het oudste item van de reeks'],
+                'intro' => [
+                    'en' => 'Twelve events, six ahead and six behind. Enough to fill both halves of every row setting without anything looking staged.',
+                    'nl' => 'Twaalf events, zes vooruit en zes terug. Genoeg om beide helften van elke rij-instelling te vullen zonder dat het in scène gezet oogt.',
+                ],
+                'head' => ['en' => 'Replace all of this', 'nl' => 'Vervang dit allemaal'],
                 'body' => [
-                    'nl' => '<p>Uit dit ontbijt kwamen twee van de projecten die inmiddels in uitvoering zijn. Volgend jaar zetten we de tafel weer neer.</p>',
-                    'en' => '<p>Two of the projects now underway came out of this breakfast. Next year we will set the table again.</p>',
+                    'en' => '<p>These items exist to show behaviour, not to be kept. Delete them, or edit them into your own programme — the reset puts them back a quarter of an hour after your last change.</p>',
+                    'nl' => '<p>Deze items bestaan om gedrag te tonen, niet om te blijven. Verwijder ze of maak er je eigen programma van — de reset zet ze een kwartier na je laatste wijziging terug.</p>',
                 ],
             ],
         ],
     ],
 
+    // ── Reference ────────────────────────────────────────────────────────────
+    // The generic archetype: no dates, ordered by hand. Deliberately terse — these
+    // are reference cards, not the narrative the Features pages carry.
     'projects' => [
         [
-            'image' => 'projects/bibliotheekplein.jpg',
-            'title' => ['nl' => 'Herinrichting van het bibliotheekplein', 'en' => 'Redesign of the library square'],
-            'intro' => ['nl' => 'Van doorgangsgebied naar plek om te blijven, met banken, bomen en bewegwijzering in één handschrift.', 'en' => 'From thoroughfare to a place to stay, with benches, trees and signage in one hand.'],
-            'head' => ['nl' => 'De opgave', 'en' => 'The brief'],
+            'image' => 'abstract/03.jpg',
+            'tags' => ['Panel'],
+            'title' => ['en' => 'Resource', 'nl' => 'Resource'],
+            'intro' => [
+                'en' => 'One class per model. Declares the fields; the panel builds the index, the editor, validation, search and filters from them.',
+                'nl' => 'Eén class per model. Declareert de velden; het paneel bouwt daaruit de index, de editor, validatie, zoeken en filters.',
+            ],
+            'head' => ['en' => 'Generate the first version', 'nl' => 'Genereer de eerste versie'],
             'body' => [
-                'nl' => '<p>Het plein werd vooral gebruikt om overheen te lopen. Door de zitplekken uit de hoeken naar het midden te halen en de bomen door te zetten, is er schaduw waar mensen ook echt gaan zitten.</p><p>De bewegwijzering is in de werkplaats gedrukt en met de hand gemonteerd.</p>',
-                'en' => '<p>The square was mostly used to walk across. By moving the seating from the corners into the middle and continuing the line of trees, there is now shade where people actually sit.</p><p>The signage was printed in the workshop and mounted by hand.</p>',
+                'en' => '<p><code>php artisan leap:module Page</code> reads the migration and the casts and writes it for you. Lives in <code>app/Leap/</code>.</p>',
+                'nl' => '<p><code>php artisan leap:module Page</code> leest de migratie en de casts en schrijft hem voor je. Staat in <code>app/Leap/</code>.</p>',
             ],
         ],
         [
-            'image' => 'projects/buurtfestival-huisstijl.jpg',
-            'title' => ['nl' => 'Huisstijl voor een buurtfestival', 'en' => 'Identity for a neighbourhood festival'],
-            'intro' => ['nl' => 'Eén affiche dat in vier kleuren steeds anders is, zodat elke editie herkenbaar én nieuw blijft.', 'en' => 'One poster, different in four colours each time, so every edition stays recognisable and new.'],
-            'head' => ['nl' => 'Uitgangspunt', 'en' => 'The starting point'],
+            'image' => 'abstract/04.jpg',
+            'tags' => ['Panel'],
+            'title' => ['en' => 'Attribute', 'nl' => 'Attribute'],
+            'intro' => [
+                'en' => 'One field, declared fluently. The input type and every rule about it hang off the same call.',
+                'nl' => 'Eén veld, vloeiend gedeclareerd. Het invoertype en elke regel erover hangen aan dezelfde aanroep.',
+            ],
+            'head' => ['en' => 'A few of them', 'nl' => 'Een paar ervan'],
             'body' => [
-                'nl' => '<p>Het festival had geen budget voor een nieuwe campagne per jaar. De oplossing zit in het drukwerk: hetzelfde zeefdruk-ontwerp, elk jaar in een andere kleurcombinatie.</p>',
-                'en' => '<p>The festival had no budget for a new campaign each year. The answer lies in the printing: the same screen-printed design, in a different colour combination every year.</p>',
+                'en' => '<p><code>->translatable()</code>, <code>->required()</code>, <code>->unique()</code>, <code>->media()</code>, <code>->richtext()</code>, <code>->pivot()</code>, <code>->searchable()</code>, <code>->filterable()</code>, <code>->showIf()</code>.</p>',
+                'nl' => '<p><code>->translatable()</code>, <code>->required()</code>, <code>->unique()</code>, <code>->media()</code>, <code>->richtext()</code>, <code>->pivot()</code>, <code>->searchable()</code>, <code>->filterable()</code>, <code>->showIf()</code>.</p>',
             ],
         ],
         [
-            'image' => 'projects/bewegwijzering-stadspark.jpg',
-            'title' => ['nl' => 'Bewegwijzering in het stadspark', 'en' => 'Wayfinding in the city park'],
-            'intro' => ['nl' => 'Twaalf palen die je de weg wijzen zonder dat je stil hoeft te staan om ze te lezen.', 'en' => 'Twelve posts that show the way without your having to stop to read them.'],
-            'head' => ['nl' => 'Leesbaar in beweging', 'en' => 'Readable on the move'],
+            'image' => 'abstract/05.jpg',
+            'tags' => ['Content'],
+            'title' => ['en' => 'Section', 'nl' => 'Sectie'],
+            'intro' => [
+                'en' => 'A block of page content, stored as json. Declared once with its own fields, rendered by a Blade view of the same name.',
+                'nl' => 'Een blok paginacontent, opgeslagen als json. Eén keer gedeclareerd met eigen velden, gerenderd door een gelijknamige Blade-view.',
+            ],
+            'head' => ['en' => 'Shipped with the template', 'nl' => 'Meegeleverd met de template'],
             'body' => [
-                'nl' => '<p>De letters zijn groter dan gebruikelijk en de richtingen staan op ooghoogte van een fietser. Materiaal: hergebruikt hardhout uit de gemeentelijke opslag.</p>',
-                'en' => '<p>The letters are larger than usual and the directions sit at a cyclist\'s eye level. Material: reclaimed hardwood from the council depot.</p>',
+                'en' => '<p>slide, text with image, quote, call to action, video, cookie overview, and a card row per content type.</p>',
+                'nl' => '<p>slide, tekst met afbeelding, citaat, call to action, video, cookie-overzicht, en een kaartenrij per content-type.</p>',
             ],
         ],
         [
-            'image' => 'projects/jaarverslag.jpg',
-            'title' => ['nl' => 'Jaarverslag in print en online', 'en' => 'Annual report in print and online'],
-            'intro' => ['nl' => 'Een verslag dat je ook echt uitleest, met dezelfde opmaak op papier als op het scherm.', 'en' => 'A report you actually finish reading, laid out the same on paper as on screen.'],
-            'head' => ['nl' => 'Twee dragers, één vorm', 'en' => 'Two carriers, one form'],
+            'image' => 'abstract/06.jpg',
+            'tags' => ['Media'],
+            'title' => ['en' => 'Media', 'nl' => 'Media'],
+            'intro' => [
+                'en' => 'One record per file, attached to as many models as you like. Crop, focus point and alt text per language live on the record.',
+                'nl' => 'Eén record per bestand, gekoppeld aan zoveel modellen als je wilt. Uitsnede, focuspunt en alt-tekst per taal staan op het record.',
+            ],
+            'head' => ['en' => 'On the page', 'nl' => 'Op de pagina'],
             'body' => [
-                'nl' => '<p>De cijfers staan in de marge in plaats van in tabellen achterin, zodat ze naast het verhaal staan waar ze bij horen.</p>',
-                'en' => '<p>The figures sit in the margin rather than in tables at the back, so they stand next to the story they belong to.</p>',
+                'en' => '<p>Served through a srcset of six widths, generated on first request. Width and height come from the record, so nothing shifts while loading.</p>',
+                'nl' => '<p>Geserveerd via een srcset van zes breedtes, gegenereerd bij het eerste verzoek. Breedte en hoogte komen uit het record, dus er verschuift niets tijdens het laden.</p>',
             ],
         ],
         [
-            'image' => 'projects/meubels-reststromen.jpg',
-            'title' => ['nl' => 'Meubels van reststromen', 'en' => 'Furniture from waste materials'],
-            'intro' => ['nl' => 'Een serie tafels en krukken uit het hout dat bij verbouwingen overblijft.', 'en' => 'A series of tables and stools from the wood left over by building work.'],
-            'head' => ['nl' => 'Van restpartij naar serie', 'en' => 'From offcuts to a series'],
+            'image' => 'abstract/07.jpg',
+            'tags' => ['Content'],
+            'title' => ['en' => 'Content type', 'nl' => 'Content-type'],
+            'intro' => [
+                'en' => 'A model registered in one place, after which the search, the sitemap, the page editor and the structured data all know about it.',
+                'nl' => 'Een model dat op één plek geregistreerd staat, waarna zoeken, de sitemap, de pagina-editor en de gestructureerde data het allemaal kennen.',
+            ],
+            'head' => ['en' => 'Three archetypes', 'nl' => 'Drie archetypes'],
             'body' => [
-                'nl' => '<p>Omdat elke partij anders is, ligt niet de maat maar de verbinding vast: dezelfde pen-en-gatverbinding werkt op balken van uiteenlopende dikte.</p><p>De eerste serie staat in de kantine van de bibliotheek.</p>',
-                'en' => '<p>Because every batch differs, it is not the size that is fixed but the joint: the same mortise and tenon works on beams of varying thickness.</p><p>The first series stands in the library canteen.</p>',
+                'en' => '<p><code>leap:content Recipe</code> generates it. News is ordered by a publication date, events by a date with optional times, generic by hand.</p>',
+                'nl' => '<p><code>leap:content Recipe</code> genereert het. Nieuws wordt geordend op publicatiedatum, events op datum met optionele tijden, generiek met de hand.</p>',
             ],
         ],
         [
-            'image' => 'projects/tentoonstelling-makers.jpg',
-            'title' => ['nl' => 'Tentoonstelling over lokale makers', 'en' => 'Exhibition on local makers'],
-            'intro' => ['nl' => 'Portretten en werk van twintig mensen die binnen een kilometer van de werkplaats iets maken.', 'en' => 'Portraits and work by twenty people making something within a kilometre of the workshop.'],
-            'head' => ['nl' => 'Opzet', 'en' => 'Set-up'],
+            'image' => 'abstract/08.jpg',
+            'tags' => ['Panel'],
+            'title' => ['en' => 'Role', 'nl' => 'Rol'],
+            'intro' => [
+                'en' => 'Permissions per module and per action. Without read on a module it is not in the menu and its URL is a 404.',
+                'nl' => 'Rechten per module en per actie. Zonder leesrecht staat een module niet in het menu en is de URL een 404.',
+            ],
+            'head' => ['en' => 'Try it here', 'nl' => 'Probeer het hier'],
             'body' => [
-                'nl' => '<p>Elke maker kreeg één vitrine en één vraag: wat is het eerste dat je ooit hebt gemaakt? De antwoorden hingen ernaast, in handschrift.</p>',
-                'en' => '<p>Each maker was given one display case and one question: what is the first thing you ever made? The answers hung beside them, handwritten.</p>',
+                'en' => '<p>Log in as <code>editor@example.com</code> with the demo password: same panel, fewer modules.</p>',
+                'nl' => '<p>Log in als <code>editor@example.com</code> met het demo-wachtwoord: hetzelfde paneel, minder modules.</p>',
+            ],
+        ],
+        [
+            'image' => 'abstract/01.jpg',
+            'tags' => ['AI'],
+            'title' => ['en' => 'AI task', 'nl' => 'AI-taak'],
+            'intro' => [
+                'en' => 'Three of them, each off until you name a provider, and each free to use a different one.',
+                'nl' => 'Er zijn er drie, elk uit tot je een provider noemt, en elk vrij om een andere te gebruiken.',
+            ],
+            'head' => ['en' => 'What they do', 'nl' => 'Wat ze doen'],
+            'body' => [
+                'en' => '<p>Translate a field or a whole record, describe an image for its alt text, or generate an image from the record you are editing.</p>',
+                'nl' => '<p>Een veld of een heel record vertalen, een afbeelding beschrijven voor de alt-tekst, of een afbeelding genereren vanuit het record dat je bewerkt.</p>',
+            ],
+        ],
+        [
+            'image' => 'abstract/02.jpg',
+            'tags' => ['Privacy'],
+            'title' => ['en' => 'Consent', 'nl' => 'Toestemming'],
+            'intro' => [
+                'en' => 'A bar, not a wall. Categories are allowed separately and third-party snippets stay parked until theirs is.',
+                'nl' => 'Een balk, geen muur. Categorieën worden apart toegestaan en scripts van derden blijven geparkeerd tot die van hen aan de beurt is.',
+            ],
+            'head' => ['en' => 'One source', 'nl' => 'Eén bron'],
+            'body' => [
+                'en' => '<p>The cookie table on the Privacy page is rendered from the same config the banner enforces, so the two cannot disagree.</p>',
+                'nl' => '<p>De cookietabel op de Privacy-pagina komt uit dezelfde config die de banner afdwingt, dus die twee kunnen niet van elkaar afwijken.</p>',
             ],
         ],
     ],
-
 ];

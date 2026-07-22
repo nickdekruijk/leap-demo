@@ -35,18 +35,23 @@ and English content in `database/seeders/demo-content.php`. `PageSeeder` and the
 seeders are left exactly as `leap:template` ships them and are unused here, so the demo can
 carry its own copy without drifting from the template.
 
-The seeded site is a fictional open workshop for printing, wood and repair. Its name is not
-seeded but read from `APP_NAME` — the header, footer, page titles, `og:site_name` and the
-admin panel all take it from there, and the seeded footer copyright bakes in whatever it says
-at the moment of seeding. Set it on the demo host too, or the site introduces itself as
-"Laravel".
+The seeded site documents itself: every page shows one capability of the panel or the
+template and explains where to change it, because this is a starting point to build on
+rather than a finished website. English is served on the bare URLs and Dutch under
+`/nl` — swap the order of `leap.locales` to swap that around. The images are deliberately
+abstract placeholders. `APP_NAME` still names the site in the header, the footer, the page
+titles and the admin panel, so set it on the demo host too.
 
-`APP_LOCALE` is the language of the admin panel and the console, not of the website:
-`config('leap.locales')` lists Dutch first, so the frontend serves Dutch on the unprefixed
-URLs and English under `/en` whatever `APP_LOCALE` says. The demo runs it on `en` for an
-English admin above a Dutch site. `tests/TestCase.php` pins the test locale to that first
-frontend locale for the same reason — without it a test asks for `/news` while the page
-lives at `/nieuws`, and every nested page and item detail comes back 404.
+Two accounts are seeded: `info@example.com` is a superuser, and `editor@example.com` (same
+password) has a role without users and roles, so the difference is visible. The AI
+translation and alt-text tasks are on and need an `OPENAI_API_KEY`; image generation is
+deliberately off, because a click on it costs money and every visitor shares one account.
+
+`APP_LOCALE` is the language of the admin panel and the console, not of the website: the
+frontend serves the first language of `config('leap.locales')` on the unprefixed URLs and
+the rest under a prefix, whatever `APP_LOCALE` says. `tests/TestCase.php` pins the test
+locale to that first frontend locale, so the suite does not pass or fail on which language
+a developer happens to have in their `.env`.
 
 Run `php artisan demo:reset --now` to reset immediately, or
 `php artisan migrate:fresh --seed --seeder="Database\Seeders\DemoSeeder"` to rebuild the demo

@@ -48,7 +48,7 @@ class DemoResetCommandTest extends TestCase
 
         // DemoSeeder ran as the root seeder, so the demo's own copy is back and
         // DatabaseSeeder's test account is not
-        $this->assertSame(6, DB::table('news')->count());
+        $this->assertSame(10, DB::table('news')->count());
         $this->assertDatabaseMissing('users', ['email' => 'test@example.com']);
 
         // The seeded photographs survive their own reset: cleanStorage() has to run

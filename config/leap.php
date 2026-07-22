@@ -304,7 +304,9 @@ return [
     | 'locales' => ['nl' => 'Nederlands', 'en' => 'English']
     |
     */
-    'locales' => ['nl' => 'Nederlands', 'en' => 'English'],
+    // English first: this is a demo for developers, so the unprefixed URLs are the
+    // English ones and Dutch lives under /nl. Swap the order to swap the default.
+    'locales' => ['en' => 'English', 'nl' => 'Nederlands'],
 
     /*
     |--------------------------------------------------------------------------
@@ -376,20 +378,27 @@ return [
         // Request timeout in seconds for provider calls, and a per-user rate limit
         // (max AI actions per minute) — each call hits a paid third-party API.
         'timeout' => 60,
-        'rate_limit' => 30,
+        // Lower than the default 30 because every visitor of the public demo shares
+        // one account, so this limit is shared between all of them at once.
+        'rate_limit' => 10,
 
         // Generate image alt texts (per locale) in the filemanager.
         'alt_text' => [
-            'provider' => null, // 'gemini' | 'claude' | 'openai' (vision required)
-            'model' => null,    // null => gemini-2.5-flash / claude-haiku-4-5 / gpt-4o-mini
+            'provider' => 'openai', // 'gemini' | 'claude' | 'openai' (vision required)
+            'model' => null,        // null => gemini-2.5-flash / claude-haiku-4-5 / gpt-4o-mini
         ],
 
         // Translate editor content (per field or all fields) into the active locale.
         'translate' => [
-            'provider' => null, // 'gemini' | 'claude' | 'openai' | 'deepl'
-            'model' => null,    // null => provider default; override e.g. 'claude-sonnet-5'
+            'provider' => 'openai', // 'gemini' | 'claude' | 'openai' | 'deepl'
+            'model' => null,        // null => provider default; override e.g. 'claude-sonnet-5'
             // 'max_tokens' => 8192, // chat providers: cap the reply; raise for long pages
         ],
+
+        // Image generation is deliberately left off on the demo: a click costs real
+        // money and one shared account cannot be rate-limited per visitor. Set the
+        // provider here to try it on your own install — see docs/ai.md.
+        // 'image' => ['provider' => 'openai'],
     ],
 
     /*

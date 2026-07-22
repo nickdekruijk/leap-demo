@@ -13,6 +13,25 @@ class News extends Resource
 
     public $model = \App\Models\News::class;
 
+    /**
+     * Setting this at all is what puts the export button in the index header; the
+     * file itself is built from the attributes below.
+     */
+    public $downloadCSV = true;
+
+    /**
+     * And this puts the import button beside it: `columns` are the ones a CSV may be
+     * mapped onto, `attributes` the ones the wizard writes. Left unset on the other
+     * resources, so you can see the difference between a screen that has it and one
+     * that does not.
+     *
+     * @var array<string, array<int, string>>
+     */
+    public array $allowImport = [
+        'columns' => ['title', 'intro', 'published_at'],
+        'attributes' => ['title', 'intro', 'published_at', 'active', 'tags'],
+    ];
+
     public function attributes(): array
     {
         return [

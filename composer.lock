@@ -11652,16 +11652,16 @@
         },
         {
             "name": "nickdekruijk/leap-template",
-            "version": "0.10.14",
+            "version": "0.10.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap-template.git",
-                "reference": "5e2acea336b69d420138e4907d707e55d1b21a3c"
+                "reference": "dc83c29247c57988af2e28991f6738bb2c9e4eb3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/5e2acea336b69d420138e4907d707e55d1b21a3c",
-                "reference": "5e2acea336b69d420138e4907d707e55d1b21a3c",
+                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/dc83c29247c57988af2e28991f6738bb2c9e4eb3",
+                "reference": "dc83c29247c57988af2e28991f6738bb2c9e4eb3",
                 "shasum": ""
             },
             "require": {
@@ -11714,9 +11714,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap-template/issues",
-                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.14"
+                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.16"
             },
-            "time": "2026-07-22T07:50:19+00:00"
+            "time": "2026-07-22T10:38:40+00:00"
         },
         {
             "name": "nunomaduro/collision",

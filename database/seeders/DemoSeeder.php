@@ -12,39 +12,78 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use NickDeKruijk\Leap\Livewire\FileManager;
+use NickDeKruijk\Leap\Livewire\Profile;
 use NickDeKruijk\Leap\Models\Media;
 use NickDeKruijk\Leap\Models\Mediable;
 use NickDeKruijk\Leap\Models\Role;
 use NickDeKruijk\Settings\Setting;
 
 /**
- * The complete state of the public demo site at leap.nickdekruijk.nl: its admin
- * account, pages, tags and content. Run as the root seeder by demo:reset, which
- * rebuilds the site from scratch once the demo user has been idle long enough.
+ * The complete state of the public demo at leap.nickdekruijk.nl. Run as the root
+ * seeder by demo:reset, which rebuilds the site once the demo user has been idle.
+ *
+ * The demo documents itself: every page shows a capability and explains where to
+ * change it, because this is a starting point for your own project — a leapstart —
+ * and not a finished website. Content that only exists to demonstrate something says
+ * so, and invites you to replace it.
  *
  * Deliberately standalone. PageSeeder and the content seeders are stubs shipped by
- * leap-template and are left byte-identical to them, so the demo can carry its own
- * copy without drifting from what `leap:template` installs — and so a `--fresh`
- * never overwrites what the demo shows.
+ * leap-template and stay byte-identical to them, so the demo can carry its own copy
+ * without drifting from what `leap:template` installs.
  *
- * Everything is dated relative to the moment of seeding rather than faked at
- * random, so every reset produces exactly the same site.
+ * Everything is dated relative to the moment of seeding rather than faked at random,
+ * so every reset produces exactly the same site.
  */
 class DemoSeeder extends Seeder
 {
     /**
-     * The demo's content types, in the order config('leap.content') registers them.
-     * Their overview pages take id 7 and up and sort 100 and up.
+     * The content types, in the order config('leap.content') registers them. Their
+     * overview pages take id 10 and up and sort 100 and up.
      *
      * "overview" and "teaser" are extra keys for that type's section on its own
-     * overview page and on the home page — the demo sets a few by hand so the site
-     * shows more than one way of listing the same cards.
+     * overview page and on the home page.
      */
     protected const OVERVIEWS = [
-        7 => ['key' => 'events', 'title' => ['nl' => 'Agenda', 'en' => 'Events']],
-        8 => ['key' => 'news', 'title' => ['nl' => 'Nieuws', 'en' => 'News'], 'overview' => ['columns' => 4], 'teaser' => ['columns' => 4]],
-        9 => ['key' => 'projects', 'title' => ['nl' => 'Projecten', 'en' => 'Projects'], 'teaser' => ['layout' => 'grid']],
+        10 => ['key' => 'events', 'title' => ['en' => 'Agenda', 'nl' => 'Agenda']],
+        11 => [
+            'key' => 'news',
+            'title' => ['en' => 'Releases', 'nl' => 'Releases'],
+            'overview' => ['columns' => 3],
+            'teaser' => ['columns' => 3],
+            'intro' => [[
+                '_name' => 'default',
+                '_sort' => 0,
+                'active' => true,
+                'image_position' => 'none',
+                'head' => ['en' => 'Straight from the changelog', 'nl' => 'Rechtstreeks uit de changelog'],
+                'body' => [
+                    'en' => '<p>Read from the <code>CHANGELOG.md</code> of both packages every time the demo is seeded, so they cannot fall behind a release. Filter by <em>Leap</em> for the admin panel or <em>Template</em> for the website scaffolding, or by what a release did: added, fixed, changed.</p><p>They are in English, because release notes are not translated.</p>',
+                    'nl' => '<p>Bij elke seed gelezen uit de <code>CHANGELOG.md</code> van beide packages, zodat ze nooit achterlopen op een release. Filter op <em>Leap</em> voor het adminpaneel of <em>Template</em> voor de website-scaffolding, of op wat een release deed: added, fixed, changed.</p><p>Ze zijn Engelstalig, want release notes worden niet vertaald.</p>',
+                ],
+            ]],
+        ],
+        12 => [
+            'key' => 'projects',
+            'title' => ['en' => 'Reference', 'nl' => 'Naslag'],
+            'teaser' => ['layout' => 'grid'],
+            // An overview page is an ordinary page, so it can say something before its
+            // cards. This is where the three content archetypes are explained.
+            'intro' => [[
+                '_name' => 'default',
+                '_sort' => 0,
+                'active' => true,
+                'image_position' => 'none',
+                'head' => ['en' => 'Short definitions', 'nl' => 'Korte definities'],
+                'body' => [
+                    'en' => '<p>One card per concept, kept deliberately brief. They are records of the third content archetype: no dates, ordered by hand, dragged into place in the panel — where the other two order themselves by a publication date and by an event date.</p>',
+                    'nl' => '<p>Eén kaart per begrip, bewust kort gehouden. Het zijn records van het derde content-archetype: geen datums, met de hand geordend, in het paneel op hun plek gesleept — waar de andere twee zichzelf ordenen op publicatiedatum en op eventdatum.</p>',
+                ],
+            ]],
+        ],
     ];
 
     /**
@@ -56,7 +95,8 @@ class DemoSeeder extends Seeder
     {
         $this->content = require __DIR__.'/demo-content.php';
 
-        $this->seedDemoUser();
+        $this->seedRoles();
+        $this->seedUsers();
         $this->seedTags();
         $this->seedPages();
         $this->seedPageImages();
@@ -68,36 +108,68 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * The account demo visitors log in with. The role_user migration only attaches
-     * the superuser role to the first user that exists while migrating, and on a
-     * fresh database that is nobody, so it is attached here.
+     * Two roles, because one role demonstrates nothing. The editor may work on
+     * content and files and has no access at all to users and roles — those modules
+     * are not greyed out for them, they are simply not there.
      */
-    protected function seedDemoUser(): void
+    protected function seedRoles(): void
     {
-        $user = User::firstOrCreate(
-            ['email' => config('demo.email')],
-            [
-                'name' => 'Demo User',
-                'password' => config('demo.password'),
+        Role::firstOrCreate(['name' => 'editor'], [
+            'permissions' => [
+                ['_name' => \App\Leap\Page::class, 'read' => true, 'create' => true, 'update' => true, 'delete' => false],
+                ['_name' => \App\Leap\News::class, 'read' => true, 'create' => true, 'update' => true, 'delete' => true],
+                ['_name' => \App\Leap\Event::class, 'read' => true, 'create' => true, 'update' => true, 'delete' => true],
+                ['_name' => \App\Leap\Project::class, 'read' => true, 'create' => true, 'update' => true, 'delete' => true],
+                ['_name' => \App\Leap\Tag::class, 'read' => true, 'create' => true, 'update' => true, 'delete' => false],
+                ['_name' => FileManager::class, 'read' => true, 'create' => true, 'update' => true, 'delete' => true],
+                ['_name' => Profile::class, 'read' => true, 'update' => true],
             ],
+        ]);
+    }
+
+    /**
+     * The account demo visitors log in with, plus the restricted one they can compare
+     * it against. The role_user migration only attaches superuser to the first user
+     * that exists while migrating, and on a fresh database that is nobody.
+     */
+    protected function seedUsers(): void
+    {
+        $demo = User::firstOrCreate(
+            ['email' => config('demo.email')],
+            ['name' => 'Demo User', 'password' => config('demo.password')],
         );
 
-        Role::firstWhere('name', 'superuser')?->users()->syncWithoutDetaching([$user->id]);
+        Role::firstWhere('name', 'superuser')?->users()->syncWithoutDetaching([$demo->id]);
+
+        $editor = User::firstOrCreate(
+            ['email' => 'editor@example.com'],
+            ['name' => 'Editor', 'password' => config('demo.password')],
+        );
+
+        Role::firstWhere('name', 'editor')?->users()->syncWithoutDetaching([$editor->id]);
     }
+
+    /**
+     * One shared vocabulary for all three content types. Each overview only shows the
+     * chips its own items carry, so the agenda offers a different set from the
+     * releases without any of them needing a vocabulary of their own.
+     *
+     * The changelog's own section headings — Added, Fixed, Changed — are added by the
+     * release parser as it meets them, which is why they are not listed here.
+     */
+    protected const TAGS = [
+        'Content' => ['en' => 'Content', 'nl' => 'Content'],
+        'Dates & times' => ['en' => 'Dates & times', 'nl' => 'Datum en tijd'],
+        'Media' => ['en' => 'Media', 'nl' => 'Media'],
+        'Panel' => ['en' => 'Panel', 'nl' => 'Paneel'],
+        'AI' => ['en' => 'AI', 'nl' => 'AI'],
+        'Privacy' => ['en' => 'Privacy', 'nl' => 'Privacy'],
+    ];
 
     protected function seedTags(): void
     {
-        if (Tag::count() > 0) {
-            return;
-        }
-
-        foreach ([
-            ['nl' => 'Werkplaats', 'en' => 'Workshop'],
-            ['nl' => 'Programma', 'en' => 'Programme'],
-            ['nl' => 'Achtergrond', 'en' => 'Background'],
-            ['nl' => 'Aankondiging', 'en' => 'Announcement'],
-        ] as $sort => $name) {
-            Tag::create(['name' => $name, 'sort' => $sort + 1]);
+        foreach (array_values(self::TAGS) as $sort => $name) {
+            Tag::firstOrCreate(['name->en' => $name['en']], ['name' => $name, 'sort' => $sort + 1]);
         }
     }
 
@@ -107,84 +179,109 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * The site's own pages. The home page carries a teaser row per content type
-     * between its quote and its call to action; those rows only need the overview
-     * to exist by the time a visitor opens the page, not while seeding.
+     * The pages. Home carries a teaser row per content type between its quote and its
+     * call to action; the rest each demonstrate one part of the template.
      */
     protected function seedPages(): void
     {
         $this->page(1, [
-            'title' => ['nl' => 'Home', 'en' => 'Home'],
+            'title' => ['en' => 'Home', 'nl' => 'Home'],
             // The reserved slug "/" resolves order-independently and keeps the home
             // page from also being reachable under a second URL.
-            'slug' => ['nl' => '/', 'en' => '/'],
+            'slug' => ['en' => '/', 'nl' => '/'],
             'menuitem' => false,
             'sort' => 1,
             'description' => [
-                'nl' => 'Een open werkplaats voor druktechniek, hout en reparatie — en de demo van het Leap adminpaneel.',
-                'en' => 'An open workshop for printing, wood and repair — and the demo of the Leap admin panel.',
+                'en' => 'The demo of Leap, a Laravel admin panel, and of the website template that comes with it. Everything you see here is editable, and resets itself every quarter of an hour.',
+                'nl' => 'De demo van Leap, een Laravel adminpaneel, en van de websitetemplate die erbij hoort. Alles wat je hier ziet is aanpasbaar en zet zichzelf elk kwartier terug.',
             ],
             'sections' => [
                 [
                     '_name' => 'slide',
                     '_sort' => 0,
                     'active' => true,
-                    // Without an uploaded image the slides fall back to a dark gradient,
-                    // so they ask for white text rather than leaning on the default.
                     'white_text' => true,
-                    'head' => ['nl' => 'De werkplaats is open', 'en' => 'The workshop is open'],
-                    'body' => ['nl' => '<p>Elke donderdagavond kun je zonder aanmelding binnenlopen.</p>', 'en' => '<p>Every Thursday evening you can walk in without booking.</p>'],
+                    'head' => ['en' => 'Laravel Easy Admin Panel', 'nl' => 'Laravel Easy Admin Panel'],
+                    'body' => [
+                        'en' => '<p>Declare a screen in PHP and Leap gives you the index, the editor, validation, search and permissions.</p>',
+                        'nl' => '<p>Declareer een scherm in PHP en Leap geeft je de index, de editor, validatie, zoeken en rechten.</p>',
+                    ],
                 ],
                 [
                     '_name' => 'slide',
                     '_sort' => 1,
                     'active' => true,
                     'white_text' => true,
-                    'head' => ['nl' => 'Leren door te maken', 'en' => 'Learning by making'],
-                    'body' => ['nl' => '<p>Workshops in zeefdruk, boekbinden en houtbewerking, het hele jaar door.</p>', 'en' => '<p>Workshops in screen printing, bookbinding and woodwork, all year round.</p>'],
+                    'head' => ['en' => 'A leapstart for your next website', 'nl' => 'Een leapstart voor je volgende website'],
+                    'body' => [
+                        'en' => '<p>One command scaffolds the frontend too: pages, sections, navigation, search, SEO and cookie consent.</p>',
+                        'nl' => '<p>Eén commando zet ook de frontend neer: pagina\'s, secties, navigatie, zoeken, SEO en cookietoestemming.</p>',
+                    ],
                 ],
                 [
                     '_name' => 'slide',
                     '_sort' => 2,
                     'active' => true,
                     'white_text' => true,
-                    'head' => ['nl' => 'Alles zelf te beheren', 'en' => 'All of it self-managed'],
-                    'body' => ['nl' => '<p>Deze hele website wordt beheerd in het Leap adminpaneel. Log in en probeer het.</p>', 'en' => '<p>This entire website is managed in the Leap admin panel. Log in and try it.</p>'],
+                    'head' => ['en' => 'Change anything you like', 'nl' => 'Verander wat je wilt'],
+                    'body' => [
+                        'en' => '<p>Log in with <strong>info@example.com</strong> / <strong>leapdemo</strong>. The site resets 15 minutes after the last edit.</p>',
+                        'nl' => '<p>Log in met <strong>info@example.com</strong> / <strong>leapdemo</strong>. De site reset 15 minuten na de laatste wijziging.</p>',
+                    ],
                 ],
-                // One "default" section per image_position, so the home page shows every
-                // layout at once. Upload an image per section in the admin panel; without
-                // one the text spans the full width.
                 [
                     '_name' => 'default',
                     '_sort' => 3,
                     'active' => true,
-                    'head' => ['nl' => 'Wie hier komen', 'en' => 'Who comes here'],
+                    'menuitem' => true,
+                    'head' => ['en' => 'A screen per model', 'nl' => 'Een scherm per model'],
                     'image_position' => 'left',
-                    'body' => ['nl' => '<p>Ontwerpers, buurtbewoners, scholen en iedereen die iets kapot heeft dat nog te redden is.</p>', 'en' => '<p>Designers, neighbours, schools and anyone with something broken that can still be saved.</p>'],
+                    'body' => [
+                        'en' => '<p>A resource is one class pointing at one model. Fields are declared with a fluent API — <code>->translatable()</code>, <code>->required()</code>, <code>->media()</code>, <code>->searchable()</code> — and the panel builds the rest. <code>leap:module</code> writes the first version from your migration.</p>',
+                        'nl' => '<p>Een resource is één class die naar één model wijst. Velden declareer je met een vloeiende API — <code>->translatable()</code>, <code>->required()</code>, <code>->media()</code>, <code>->searchable()</code> — en het paneel bouwt de rest. <code>leap:module</code> schrijft de eerste versie op basis van je migratie.</p>',
+                    ],
                 ],
                 [
                     '_name' => 'default',
                     '_sort' => 4,
                     'active' => true,
-                    'head' => ['nl' => 'Wat er staat', 'en' => 'What we have'],
+                    'head' => ['en' => 'Pages an editor composes', 'nl' => 'Pagina\'s die een redacteur samenstelt'],
                     'image_position' => 'right',
-                    'body' => ['nl' => '<p>Twee zeefdrukpersen, een risograaf, een houtwerkplaats en een muur vol gereedschap.</p>', 'en' => '<p>Two screen printing presses, a risograph, a wood workshop and a wall full of tools.</p>'],
+                    'body' => [
+                        'en' => '<p>This page is a list of sections: three slides, these text blocks, a quote, three card rows and a call to action. You decide which types exist; the editor adds, reorders and switches them off. Have a look at <em>Sections</em> for all of them at once.</p>',
+                        'nl' => '<p>Deze pagina is een lijst secties: drie slides, deze tekstblokken, een citaat, drie kaartenrijen en een call to action. Jij bepaalt welke types bestaan; de redacteur voegt toe, sorteert en zet uit. Kijk op <em>Secties</em> voor allemaal tegelijk.</p>',
+                    ],
                 ],
                 [
                     '_name' => 'default',
                     '_sort' => 5,
                     'active' => true,
-                    'head' => ['nl' => 'Zelf aan de slag', 'en' => 'Get to work yourself'],
+                    'head' => ['en' => 'Two languages, one record', 'nl' => 'Twee talen, één record'],
                     'image_position' => 'bottom wide',
-                    'body' => ['nl' => '<p>Een dagdeel machinetijd kost tien euro, inclusief uitleg van een vrijwilliger.</p>', 'en' => '<p>Half a day of machine time costs ten euros, including instruction from a volunteer.</p>'],
+                    'body' => [
+                        'en' => '<p>Mark an attribute translatable and the editor grows language tabs. English is served unprefixed here and Dutch under <code>/nl</code>; slugs, menus, hreflang and the sitemap all follow from that one setting.</p>',
+                        'nl' => '<p>Markeer een attribuut als vertaalbaar en de editor krijgt taaltabs. Engels staat hier op de kale URL\'s en Nederlands onder <code>/nl</code>; slugs, menu\'s, hreflang en de sitemap volgen uit die ene instelling.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'default',
+                    '_sort' => 6,
+                    'active' => true,
+                    // No image at all: image_position 'none' centres the text column
+                    'image_position' => 'none',
+                    'head' => ['en' => 'A starting point, not a finished site', 'nl' => 'Een startpunt, geen afgeronde site'],
+                    'body' => [
+                        'en' => '<p>Everything here exists to be replaced. The copy explains the feature it is sitting in, the images are deliberately abstract placeholders, and the styling is a handful of design tokens in <code>project.scss</code>. Delete what you do not need and build your own thing on top.</p>',
+                        'nl' => '<p>Alles hier bestaat om vervangen te worden. De teksten leggen uit in welke functie ze zitten, de beelden zijn bewust abstracte placeholders, en de vormgeving is een handvol design tokens in <code>project.scss</code>. Gooi weg wat je niet nodig hebt en bouw er je eigen ding bovenop.</p>',
+                    ],
                 ],
                 [
                     '_name' => 'quote',
                     '_view' => 'sections.default',
-                    '_sort' => 6,
+                    '_sort' => 7,
                     'active' => true,
-                    'head' => ['nl' => 'Ik kwam voor een kapotte lamp en ging weg met een affiche.', 'en' => 'I came for a broken lamp and left with a poster.'],
-                    'body' => ['nl' => 'Bezoeker van het repair café', 'en' => 'Visitor to the repair café'],
+                    'head' => ['en' => 'The best starting point is one you can throw half of away.', 'nl' => 'Het beste startpunt is er een waarvan je de helft kunt weggooien.'],
+                    'body' => ['en' => 'The quote section: a heading and an attribution', 'nl' => 'De citaat-sectie: een kop en een bronvermelding'],
                 ],
                 ...$this->homeTeaserSections(),
                 [
@@ -192,118 +289,357 @@ class DemoSeeder extends Seeder
                     '_view' => 'sections.default',
                     '_sort' => 13,
                     'active' => true,
-                    'head' => ['nl' => 'Langskomen?', 'en' => 'Drop by?'],
-                    'body' => ['nl' => '<p><a class="button" href="/contact">Neem contact op</a></p>', 'en' => '<p><a class="button" href="/en/contact">Get in touch</a></p>'],
-                ],
-            ],
-        ]);
-
-        $this->page(2, [
-            'title' => ['nl' => 'Over ons', 'en' => 'About us'],
-            'slug' => ['nl' => 'over-ons', 'en' => 'about-us'],
-            // High sort so About and Contact trail the content-type overviews (sort 100
-            // and up) at the end of the menu, whatever order the pages are seeded in.
-            'sort' => 200,
-            'sections' => [
-                [
-                    '_name' => 'default',
-                    '_sort' => 0,
-                    'active' => true,
-                    'head' => ['nl' => 'Zeven jaar werkplaats', 'en' => 'Seven years of workshop'],
-                    'image_position' => 'left',
+                    'head' => ['en' => 'Start your own', 'nl' => 'Begin je eigen site'],
                     'body' => [
-                        'nl' => '<p>Wat begon als een gedeelde garage met één zeefdrukpers is uitgegroeid tot een hal waar zo\'n honderd mensen per week iets maken, repareren of leren.</p><p>De werkplaats draait op vrijwilligers en op de opbrengst van workshops. Alles wat hier staat is geschonken, geleend of gevonden.</p>',
-                        'en' => '<p>What started as a shared garage with a single screen printing press has grown into a hall where some hundred people a week make, repair or learn something.</p><p>The workshop runs on volunteers and on what the workshops bring in. Everything here was donated, borrowed or found.</p>',
+                        'en' => '<p><a class="button" href="/get-started">Two commands and you are running</a></p>',
+                        'nl' => '<p><a class="button" href="/nl/aan-de-slag">Twee commando\'s en je draait</a></p>',
                     ],
                 ],
             ],
         ]);
 
-        $this->page(3, [
-            'title' => ['nl' => 'Diensten', 'en' => 'Services'],
-            'parent' => 2,
-            'slug' => ['nl' => 'diensten', 'en' => 'services'],
+        $this->page(2, [
+            'title' => ['en' => 'Sections', 'nl' => 'Secties'],
+            'html_title' => ['en' => 'Every section type, rendered — Leap demo', 'nl' => 'Elk sectietype, gerenderd — Leap demo'],
+            'description' => [
+                'en' => 'Every section type the template ships with, one after another, each explaining what it is and which fields it has.',
+                'nl' => 'Elk sectietype dat de template meelevert, één voor één, elk met uitleg over wat het is en welke velden het heeft.',
+            ],
+            'parent' => 4,
             'sort' => 1,
             'sections' => [
                 [
                     '_name' => 'default',
                     '_sort' => 0,
                     'active' => true,
-                    'head' => ['nl' => 'Wat we voor je kunnen doen', 'en' => 'What we can do for you'],
+                    'image_position' => 'none',
+                    'head' => ['en' => 'What a section is', 'nl' => 'Wat een sectie is'],
                     'body' => [
-                        'nl' => '<p>Naast het open programma drukken we in opdracht: affiches, uitnodigingen en kleine oplagen waarvoor een drukkerij te groot is.</p><p>Ook ontwerpen we bewegwijzering en huisstijlen voor organisaties in de buurt.</p>',
-                        'en' => '<p>Alongside the open programme we print to order: posters, invitations and small runs a commercial printer is too big for.</p><p>We also design signage and identities for organisations nearby.</p>',
+                        'en' => '<p>A page stores its sections as json. Each type is declared once in <code>app/Leap/Concerns/ContentSections.php</code> with the fields it offers, and rendered by a Blade view of the same name. Everything below is one of them.</p>',
+                        'nl' => '<p>Een pagina bewaart zijn secties als json. Elk type wordt één keer gedeclareerd in <code>app/Leap/Concerns/ContentSections.php</code> met de velden die het biedt, en gerenderd door een gelijknamige Blade-view. Alles hieronder is er zo een.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'slide',
+                    '_sort' => 1,
+                    'active' => true,
+                    'white_text' => true,
+                    'head' => ['en' => 'Slide', 'nl' => 'Slide'],
+                    'body' => [
+                        'en' => '<p>A run of slides becomes a carousel; a single one is just a full-width header. Give it an .mp4 instead of an image and it plays muted on a loop.</p>',
+                        'nl' => '<p>Een reeks slides wordt een carrousel; één slide is gewoon een volle-breedte header. Geef hem een .mp4 in plaats van een afbeelding en hij speelt gedempt in een lus.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'default',
+                    '_sort' => 2,
+                    'active' => true,
+                    'menuitem' => true,
+                    'white_text' => true,
+                    'head' => ['en' => 'Text with a background photo', 'nl' => 'Tekst met een achtergrondfoto'],
+                    'image_position' => 'none',
+                    'body' => [
+                        'en' => '<p>The same text section, now with a full-bleed background and white text. Both are switches in the editor: <em>background photo</em> and <em>white text</em>. This one also has <em>menu item</em> on, which is why it appears as an anchor under Sections in the navigation.</p>',
+                        'nl' => '<p>Dezelfde tekstsectie, nu met een volledige achtergrond en witte tekst. Beide zijn schakelaars in de editor: <em>achtergrondfoto</em> en <em>witte tekst</em>. Bij deze staat ook <em>menu-item</em> aan, en daarom verschijnt hij als anker onder Secties in de navigatie.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'default',
+                    '_sort' => 3,
+                    'active' => true,
+                    'menuitem' => true,
+                    'head' => ['en' => 'A gallery in one section', 'nl' => 'Een galerij in één sectie'],
+                    'image_position' => 'right',
+                    'body' => [
+                        'en' => '<p>The image field takes more than one file. Pick a second and a third and they stack in the image column — no separate gallery section, no extra type to maintain.</p>',
+                        'nl' => '<p>Het afbeeldingsveld neemt meer dan één bestand. Kies een tweede en een derde en ze stapelen in de beeldkolom — geen aparte galerij-sectie, geen extra type om te onderhouden.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'video',
+                    '_sort' => 4,
+                    'active' => true,
+                    'head' => ['en' => 'Video', 'nl' => 'Video'],
+                    'video_id' => 'dQw4w9WgXcQ',
+                    'body' => [
+                        'en' => '<p>Paste a YouTube id or a Vimeo number. The poster is fetched from the provider once and stored locally, and the player only loads after the visitor allows embedded content — so nothing third-party runs before consent.</p>',
+                        'nl' => '<p>Plak een YouTube-id of Vimeo-nummer. De poster wordt één keer bij de aanbieder opgehaald en lokaal bewaard, en de speler laadt pas nadat de bezoeker ingesloten inhoud toestaat — er draait dus niets van derden vóór toestemming.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'quote',
+                    '_view' => 'sections.default',
+                    '_sort' => 5,
+                    'active' => true,
+                    'head' => ['en' => 'A section type is a name, a few fields and a Blade view.', 'nl' => 'Een sectietype is een naam, een paar velden en een Blade-view.'],
+                    'body' => ['en' => 'Quote section', 'nl' => 'Citaat-sectie'],
+                ],
+                [
+                    '_name' => 'cta',
+                    '_view' => 'sections.default',
+                    '_sort' => 6,
+                    'active' => true,
+                    'head' => ['en' => 'Call to action', 'nl' => 'Call to action'],
+                    'body' => [
+                        'en' => '<p>The same fields as a text section, styled to stand out. <a class="button" href="/features/sections/options">See what a card row can do</a></p>',
+                        'nl' => '<p>Dezelfde velden als een tekstsectie, opvallender vormgegeven. <a class="button" href="/nl/functies/secties/opties">Bekijk wat een kaartenrij kan</a></p>',
                     ],
                 ],
             ],
         ]);
 
+        $this->page(3, [
+            'title' => ['en' => 'Options', 'nl' => 'Opties'],
+            'parent' => 2,
+            'sort' => 1,
+            'description' => [
+                'en' => 'What the layout, columns, tag and period settings on a card row do — three rows of the same content, configured differently.',
+                'nl' => 'Wat de instellingen voor weergave, kolommen, tag en periode op een kaartenrij doen — drie rijen met dezelfde content, anders ingesteld.',
+            ],
+            'sections' => [
+                [
+                    '_name' => 'default',
+                    '_sort' => 0,
+                    'active' => true,
+                    'image_position' => 'none',
+                    'head' => ['en' => 'One section type, four settings', 'nl' => 'Eén sectietype, vier instellingen'],
+                    'body' => [
+                        'en' => '<p>A card row lists a content type. Below are three of them, all listing the agenda and the releases, each set up differently. You are also two levels deep now, so the breadcrumb above has three steps and the navigation folded this page out under Sections.</p>',
+                        'nl' => '<p>Een kaartenrij toont een content-type. Hieronder staan er drie, allemaal met de agenda en de releases, elk anders ingesteld. Je zit nu ook twee niveaus diep, dus het kruimelpad hierboven heeft drie stappen en de navigatie klapte deze pagina uit onder Secties.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'events',
+                    '_view' => 'sections.items',
+                    '_sort' => 1,
+                    'active' => true,
+                    'head' => ['en' => 'Period: past, in a grid of three', 'nl' => 'Periode: verleden, in een grid van drie'],
+                    'period' => 'past',
+                    'layout' => 'grid',
+                    'columns' => 3,
+                    'limit' => 3,
+                ],
+                [
+                    '_name' => 'events',
+                    '_view' => 'sections.items',
+                    '_sort' => 2,
+                    'active' => true,
+                    'head' => ['en' => 'Fixed to one tag', 'nl' => 'Vastgezet op één tag'],
+                    // Resolved by name: the ids depend on the order the tags were made
+                    'tag' => Tag::where('name->en', 'Content')->value('id'),
+                    'layout' => 'grid',
+                    'columns' => 2,
+                    'limit' => 4,
+                    'link_label' => ['en' => 'The whole agenda', 'nl' => 'De hele agenda'],
+                ],
+                [
+                    '_name' => 'news',
+                    '_view' => 'sections.items',
+                    '_sort' => 3,
+                    'active' => true,
+                    'head' => ['en' => 'A horizontal row, two in view', 'nl' => 'Een horizontale rij, twee in beeld'],
+                    'layout' => 'horizontal',
+                    'columns' => 2,
+                    'limit' => 6,
+                ],
+            ],
+        ]);
+
+        // The parent the explanatory pages hang under, so the main menu stays short
+        // and its fold-out is itself one of the things being demonstrated.
         $this->page(4, [
-            'title' => ['nl' => 'Contact', 'en' => 'Contact'],
-            'slug' => ['nl' => 'contact', 'en' => 'contact'],
-            'sort' => 210,
+            'title' => ['en' => 'Features', 'nl' => 'Functies'],
+            'sort' => 10,
+            'description' => [
+                'en' => 'What the panel and the template can do, each shown on the page that explains it.',
+                'nl' => 'Wat het paneel en de template kunnen, elk getoond op de pagina die het uitlegt.',
+            ],
             'sections' => [
                 [
                     '_name' => 'default',
                     '_sort' => 0,
                     'active' => true,
-                    'head' => ['nl' => 'Langskomen of schrijven', 'en' => 'Visit or write'],
+                    'image_position' => 'left',
+                    'head' => ['en' => 'Two pages, both live', 'nl' => 'Twee pagina\'s, allebei echt'],
                     'body' => [
-                        'nl' => '<p>Voorbeeldstraat 1, 3511 AB Utrecht. Open op donderdagavond en zaterdagmiddag, en op afspraak.</p><p>Mailen kan naar info@example.com — we lezen mee op werkdagen.</p>',
-                        // The country is worth spelling out for a reader who needs it;
-                        // in Dutch it would only state the obvious.
-                        'en' => '<p>Voorbeeldstraat 1, 3511 AB Utrecht, The Netherlands. Open on Thursday evenings and Saturday afternoons, and by appointment.</p><p>Write to info@example.com — we read along on working days.</p>',
+                        'en' => '<p><strong>Sections</strong> renders every section type this template ships with, one after another, each explaining its own fields — and a child page shows what the options on a card row do.</p><p><strong>Multilingual</strong> is proved by the language switch in the corner, and carries a page that deliberately has no Dutch version at all.</p>',
+                        'nl' => '<p><strong>Secties</strong> rendert elk sectietype dat deze template meelevert, één voor één, elk met uitleg over zijn eigen velden — en een subpagina toont wat de opties op een kaartenrij doen.</p><p><strong>Meertalig</strong> wordt bewezen door de taalschakelaar in de hoek, en heeft een pagina die met opzet helemaal geen Nederlandse versie heeft.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'default',
+                    '_sort' => 1,
+                    'active' => true,
+                    'image_position' => 'right',
+                    'head' => ['en' => 'And the rest is in the menu', 'nl' => 'En de rest staat in het menu'],
+                    'body' => [
+                        'en' => '<p><strong>Agenda</strong> and <strong>Releases</strong> are two of the three content archetypes, and <strong>Reference</strong> is the third — its cards are short definitions of everything named here.</p>',
+                        'nl' => '<p><strong>Agenda</strong> en <strong>Releases</strong> zijn twee van de drie content-archetypes, en <strong>Naslag</strong> is de derde — die kaarten zijn korte definities van alles wat hier genoemd wordt.</p>',
                     ],
                 ],
             ],
         ]);
 
-        // Legal pages, linked from the footer but kept out of the main navigation
         $this->page(5, [
-            'title' => ['nl' => 'Privacybeleid', 'en' => 'Privacy policy'],
-            'slug' => ['nl' => 'privacy', 'en' => 'privacy'],
-            'menuitem' => false,
-            'sort' => 4,
+            'title' => ['en' => 'Multilingual', 'nl' => 'Meertalig'],
+            'parent' => 4,
+            'sort' => 2,
+            'description' => [
+                'en' => 'Per-field translations, per-locale URLs, and a translate button that fills the rest in.',
+                'nl' => 'Vertalingen per veld, URL\'s per taal, en een vertaalknop die de rest invult.',
+            ],
             'sections' => [
                 [
                     '_name' => 'default',
                     '_sort' => 0,
                     'active' => true,
-                    'head' => ['nl' => 'Privacybeleid', 'en' => 'Privacy policy'],
+                    'image_position' => 'left',
+                    'head' => ['en' => 'The proof is the switch in the corner', 'nl' => 'Het bewijs is de schakelaar in de hoek'],
                     'body' => [
-                        'nl' => '<p>Dit is een demo-website. Wat je hier invult wordt niet bewaard: de database wordt een kwartier na de laatste wijziging volledig teruggezet.</p>',
-                        'en' => '<p>This is a demo website. Whatever you enter here is not kept: the database is fully restored a quarter of an hour after the last change.</p>',
+                        'en' => '<p>This site speaks English on its bare URLs and Dutch under <code>/nl</code>. The order of <code>leap.locales</code> decides which one is bare. Every page and item carries its own slug per language, so a translated page has a translated address too.</p>',
+                        'nl' => '<p>Deze site spreekt Engels op de kale URL\'s en Nederlands onder <code>/nl</code>. De volgorde van <code>leap.locales</code> bepaalt welke kaal is. Elke pagina en elk item heeft een eigen slug per taal, dus een vertaalde pagina heeft ook een vertaald adres.</p>',
                     ],
                 ],
-                // The cookie table renders config('leap.consent'), so the privacy page
-                // cannot drift away from the cookies the site actually sets.
+                [
+                    '_name' => 'default',
+                    '_sort' => 1,
+                    'active' => true,
+                    'image_position' => 'right',
+                    'head' => ['en' => 'Let AI do the second language', 'nl' => 'Laat AI de tweede taal doen'],
+                    'body' => [
+                        'en' => '<p>A translate button sits beside every translatable field, and one at the top fills an entire record — sections included, HTML preserved, slugs re-slugified. It is on for this demo. Try it on <a href="/features/multilingual/untranslated-example">Untranslated example</a>, the page under this one: <strong>it has no Dutch version at all</strong>. Open it in the panel, press translate, and watch it fill.</p>',
+                        'nl' => '<p>Naast elk vertaalbaar veld staat een vertaalknop, en bovenaan staat er één die een heel record vult — inclusief secties, met behoud van HTML en opnieuw geslugificeerde slugs. Op deze demo staat hij aan. Probeer het op <a href="/nl/functies/meertalig">de subpagina hieronder</a>, die <strong>helemaal geen Nederlandse versie heeft</strong> — je vindt hem alleen in het Engels. Open hem in het paneel, druk op vertalen en zie hem zich vullen.</p>',
+                    ],
+                ],
+            ],
+        ]);
+
+        // Deliberately English only: no Dutch title, no Dutch slug. It is missing from
+        // the Dutch menu, has no Dutch hreflang alternate, and its 404 under /nl is the
+        // router refusing to borrow another language's slug.
+        $this->page(6, [
+            'title' => ['en' => 'Untranslated example'],
+            'slug' => ['en' => 'untranslated-example'],
+            'parent' => 5,
+            'sort' => 1,
+            'sections' => [
+                [
+                    '_name' => 'default',
+                    '_sort' => 0,
+                    'active' => true,
+                    'image_position' => 'none',
+                    'head' => ['en' => 'This page exists in English only'],
+                    'body' => [
+                        'en' => '<p>Switch to Dutch and you will not find it: it is left out of that menu, and its address returns a 404 there. A slug is an address, not prose, so it never falls back to another language — an untranslated page is simply not served in that one.</p><p>Open it in the panel and press the translate button to give it a Dutch version. Fifteen minutes after your last edit the reset empties it again.</p>',
+                    ],
+                ],
+            ],
+        ]);
+
+        // HasSlug fills a missing translation in from the default locale's title on
+        // every save, which would give this page a Dutch address after all. Clearing
+        // it without events is what leaves it genuinely untranslated.
+        Page::withoutEvents(function (): void {
+            $page = Page::find(6);
+            $page->setTranslation('slug', 'nl', '');
+            $page->save();
+        });
+
+        $this->page(7, [
+            'title' => ['en' => 'Get started', 'nl' => 'Aan de slag'],
+            'sort' => 200,
+            'description' => [
+                'en' => 'Two composer requires and one artisan command, and you have this site running on your own machine.',
+                'nl' => 'Twee composer-requires en één artisan-commando, en deze site draait op je eigen machine.',
+            ],
+            'sections' => [
+                [
+                    '_name' => 'default',
+                    '_sort' => 0,
+                    'active' => true,
+                    'image_position' => 'none',
+                    'head' => ['en' => 'Install', 'nl' => 'Installeren'],
+                    'body' => [
+                        'en' => '<p>The panel is a runtime dependency; the scaffolding is not.</p><pre><code>composer require nickdekruijk/leap
+composer require --dev nickdekruijk/leap-template
+php artisan leap:template</code></pre><p>The installer asks which languages you want and which content types to generate, then runs the migrations and creates your first user.</p>',
+                        'nl' => '<p>Het paneel is een runtime-dependency; de scaffolding niet.</p><pre><code>composer require nickdekruijk/leap
+composer require --dev nickdekruijk/leap-template
+php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt en welke content-types hij moet genereren, draait daarna de migraties en maakt je eerste gebruiker aan.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'default',
+                    '_sort' => 1,
+                    'active' => true,
+                    'image_position' => 'none',
+                    'head' => ['en' => 'Turn the AI features on', 'nl' => 'Zet de AI-functies aan'],
+                    'body' => [
+                        'en' => '<p>Every AI task is off until you name a provider in <code>config/leap.php</code>, and each one picks its own — so you can send translations to a translation engine and images to an image model:</p><pre><code>\'translate\' => [\'provider\' => \'deepl\'],
+\'alt_text\'  => [\'provider\' => \'claude\'],
+\'image\'     => [\'provider\' => \'gemini\'],</code></pre><p>Add the matching key to your <code>.env</code> and the buttons appear; a task whose provider has no key stays hidden. On this demo translation and alt texts are on and image generation is off, because a click on it costs real money and every visitor here shares one account.</p>',
+                        'nl' => '<p>Elke AI-taak staat uit tot je een provider noemt in <code>config/leap.php</code>, en elke taak kiest zijn eigen — je kunt vertalingen dus naar een vertaalmachine sturen en beelden naar een beeldmodel:</p><pre><code>\'translate\' => [\'provider\' => \'deepl\'],
+\'alt_text\'  => [\'provider\' => \'claude\'],
+\'image\'     => [\'provider\' => \'gemini\'],</code></pre><p>Zet de bijbehorende sleutel in je <code>.env</code> en de knoppen verschijnen; een taak waarvan de provider geen sleutel heeft blijft verborgen. Op deze demo staan vertalen en alt-teksten aan en beeldgeneratie uit, omdat een klik daarop echt geld kost en elke bezoeker hier één account deelt.</p>',
+                    ],
+                ],
+                [
+                    '_name' => 'cta',
+                    '_view' => 'sections.default',
+                    '_sort' => 2,
+                    'active' => true,
+                    'head' => ['en' => 'Read the documentation', 'nl' => 'Lees de documentatie'],
+                    'body' => [
+                        'en' => '<p><a class="button" href="https://github.com/nickdekruijk/leap">nickdekruijk/leap on GitHub</a></p>',
+                        'nl' => '<p><a class="button" href="https://github.com/nickdekruijk/leap">nickdekruijk/leap op GitHub</a></p>',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->page(8, [
+            'title' => ['en' => 'Privacy', 'nl' => 'Privacy'],
+            'menuitem' => false,
+            'sort' => 300,
+            'sections' => [
+                [
+                    '_name' => 'default',
+                    '_sort' => 0,
+                    'active' => true,
+                    'image_position' => 'none',
+                    'head' => ['en' => 'Privacy', 'nl' => 'Privacy'],
+                    'body' => [
+                        'en' => '<p>This is a demo. Anything you type into it is public, and the database is rebuilt from scratch a quarter of an hour after the last change, so nothing you enter is kept.</p>',
+                        'nl' => '<p>Dit is een demo. Alles wat je hier invult is openbaar, en de database wordt een kwartier na de laatste wijziging volledig opnieuw opgebouwd, dus niets wat je invoert blijft bewaard.</p>',
+                    ],
+                ],
                 [
                     '_name' => 'cookies',
                     '_sort' => 1,
                     'active' => true,
-                    'head' => ['nl' => 'Cookies', 'en' => 'Cookies'],
+                    'head' => ['en' => 'Cookies', 'nl' => 'Cookies'],
                     'body' => [
-                        'nl' => '<p>Hieronder staat welke cookies deze website gebruikt, waarvoor, en hoe lang ze bewaard worden.</p>',
-                        'en' => '<p>Below is every cookie this website uses, what for, and how long it is kept.</p>',
+                        'en' => '<p>The table below is rendered from the same configuration the consent banner enforces, so this page cannot drift away from what the site actually does.</p>',
+                        'nl' => '<p>De tabel hieronder wordt gerenderd uit dezelfde configuratie die de toestemmingsbalk afdwingt, dus deze pagina kan niet uit de pas gaan lopen met wat de site echt doet.</p>',
                     ],
                 ],
             ],
         ]);
 
-        $this->page(6, [
-            'title' => ['nl' => 'Algemene voorwaarden', 'en' => 'Terms & conditions'],
-            'slug' => ['nl' => 'algemene-voorwaarden', 'en' => 'terms'],
+        $this->page(9, [
+            'title' => ['en' => 'Terms', 'nl' => 'Voorwaarden'],
             'menuitem' => false,
-            'sort' => 5,
+            'sort' => 310,
             'sections' => [
                 [
                     '_name' => 'default',
                     '_sort' => 0,
                     'active' => true,
-                    'head' => ['nl' => 'Algemene voorwaarden', 'en' => 'Terms & conditions'],
+                    'image_position' => 'none',
+                    'head' => ['en' => 'Terms', 'nl' => 'Voorwaarden'],
                     'body' => [
-                        'nl' => '<p>Deelname aan een workshop is op eigen risico. Afmelden kan tot 48 uur van tevoren kosteloos.</p>',
-                        'en' => '<p>Taking part in a workshop is at your own risk. Cancelling is free of charge up to 48 hours in advance.</p>',
+                        'en' => '<p>Leap and its template are open source under the MIT licence. This demo comes with no guarantees at all — it is here to be poked at.</p>',
+                        'nl' => '<p>Leap en de template zijn open source onder de MIT-licentie. Deze demo komt met geen enkele garantie — hij staat er om aan te zitten.</p>',
                     ],
                 ],
             ],
@@ -311,25 +647,35 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * The photographs on the pages, keyed by the array position of the section they
-     * belong to. Home's first six sections are its three slides and the three text
-     * sections that demonstrate the image positions; the teasers below them show the
-     * items' own images, and the legal pages stay without.
+     * The images on the pages, keyed by the array position of the section they belong
+     * to. Sections gets a background rather than an inline image, and a second and
+     * third file in one field to make the gallery.
      */
     protected function seedPageImages(): void
     {
         $this->attachSectionImages(Page::find(1), [
-            0 => 'pages/home-slide-open.jpg',
-            1 => 'pages/home-slide-leren.jpg',
-            2 => 'pages/home-slide-beheer.jpg',
-            3 => 'pages/home-wie-hier-komen.jpg',
-            4 => 'pages/home-wat-er-staat.jpg',
-            5 => 'pages/home-zelf-aan-de-slag.jpg',
+            0 => 'slides/01.jpg',
+            1 => 'slides/02.jpg',
+            2 => 'slides/03.jpg',
+            3 => 'abstract/03.jpg',
+            4 => 'abstract/04.jpg',
+            5 => 'wide/01.jpg',
         ]);
 
-        $this->attachSectionImages(Page::find(2), [0 => 'pages/over-ons.jpg']);
-        $this->attachSectionImages(Page::find(3), [0 => 'pages/diensten.jpg']);
-        $this->attachSectionImages(Page::find(4), [0 => 'pages/contact.jpg']);
+        $this->attachImage(Page::find(2), 'wide/02.jpg', 'sections.2.background', ['en' => 'Background image', 'nl' => 'Achtergrondafbeelding']);
+        $this->attachSectionImages(Page::find(2), [3 => 'abstract/05.jpg']);
+        $this->attachImage(Page::find(2), 'abstract/06.jpg', 'sections.3.image', ['en' => 'Second image of the gallery', 'nl' => 'Tweede afbeelding van de galerij'], 1);
+        $this->attachImage(Page::find(2), 'abstract/07.jpg', 'sections.3.image', ['en' => 'Third image of the gallery', 'nl' => 'Derde afbeelding van de galerij'], 2);
+
+        $this->attachSectionImages(Page::find(4), [0 => 'abstract/01.jpg', 1 => 'abstract/02.jpg']);
+        $this->attachSectionImages(Page::find(5), [0 => 'abstract/08.jpg', 1 => 'abstract/05.jpg']);
+
+        // One focus point, so the object-position of a cropped card differs from the
+        // centre the others fall back to
+        if ($media = Media::findFile('abstract/01.jpg')) {
+            $media->meta = ['image_focus' => ['x' => 25, 'y' => 30]] + ($media->meta ?? []);
+            $media->save();
+        }
     }
 
     /**
@@ -344,7 +690,7 @@ class DemoSeeder extends Seeder
             ->map(fn (array $overview, int $index): array => [
                 '_name' => $overview['key'],
                 '_view' => 'sections.items',
-                '_sort' => 7 + $index,
+                '_sort' => 8 + $index,
                 'active' => true,
                 'head' => $overview['title'],
                 'limit' => 6,
@@ -353,9 +699,8 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * One page per content type. An unlimited, untagged items section is what makes
-     * a page the canonical overview (see PageController::overviewPage()) and gives
-     * every item of that type its detail URL.
+     * One page per content type. An unlimited, untagged items section is what makes a
+     * page the canonical overview and gives every item of that type its detail URL.
      */
     protected function seedOverviewPages(): void
     {
@@ -367,16 +712,196 @@ class DemoSeeder extends Seeder
                 'menuitem' => true,
                 'title' => $overview['title'],
                 'sort' => 100 + $position++,
-                'sections' => [[
-                    '_name' => $overview['key'],
-                    '_view' => 'sections.items',
-                    '_sort' => 0,
-                    'active' => true,
-                    'head' => $overview['title'],
-                    ...$overview['overview'] ?? [],
-                ]],
+                'sections' => [
+                    ...$overview['intro'] ?? [],
+                    [
+                        '_name' => $overview['key'],
+                        '_view' => 'sections.items',
+                        '_sort' => 1,
+                        'active' => true,
+                        'head' => $overview['title'],
+                        ...$overview['overview'] ?? [],
+                    ],
+                ],
             ]);
         }
+    }
+
+    /**
+     * The packages whose changelogs fill the releases, and what a release of each is
+     * called on the card. Read from the copy in vendor/ when it is there, so the demo
+     * shows the version it actually runs; the template is a dev dependency and is
+     * missing on a host that installs with --no-dev, and is then fetched from GitHub.
+     */
+    protected const CHANGELOGS = [
+        'Leap' => 'nickdekruijk/leap',
+        'Template' => 'nickdekruijk/leap-template',
+    ];
+
+    /**
+     * The releases of both packages, newest first. When neither changelog can be read
+     * the hand-written items in demo-content.php take over, because an unattended
+     * reset must never fail over a parse.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function releasesFromChangelog(int $perPackage = 5): array
+    {
+        $items = [];
+
+        foreach (array_keys(self::CHANGELOGS) as $offset => $package) {
+            $items = array_merge($items, $this->releasesOf($package, $perPackage, $offset));
+        }
+
+        usort($items, fn (array $a, array $b): int => strcmp($b['published'], $a['published']));
+
+        return $items;
+    }
+
+    /**
+     * One package's changelog, parsed into cards.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function releasesOf(string $package, int $limit, int $offset): array
+    {
+        if (! $markdown = $this->changelogOf(self::CHANGELOGS[$package])) {
+            return [];
+        }
+
+        preg_match_all(
+            '/^## \[([^\]]+)\](?: — (\d{4}-\d{2}-\d{2}))?\R(.*?)(?=^## \[|\z)/ms',
+            $markdown,
+            $releases,
+            PREG_SET_ORDER,
+        );
+
+        $items = [];
+        $perDay = [];
+
+        foreach (array_slice($releases, 0, $limit) as $index => [, $version, $date, $body]) {
+            // Every entry opens with a bold sentence saying what changed
+            preg_match_all('/^- \*\*(.+?)\*\*(.*)$/m', $body, $highlights, PREG_SET_ORDER);
+
+            if ($highlights === []) {
+                continue;
+            }
+
+            $unreleased = ! $date;
+            // Two releases can share a day, and the file is newest first: stepping the
+            // clock back per entry keeps that order after the database sorts on it.
+            // The extra minute per package keeps the two apart on a shared date.
+            $seen = $perDay[$date] = ($perDay[$date] ?? -1) + 1;
+            $published = $unreleased
+                ? now()->addDays(10)->subMinutes($offset)->toDateTimeString()
+                : Carbon::parse($date)->setTime(12, 0)->subMinutes($seen * 30 + $offset)->toDateTimeString();
+
+            // Title and intro are plain text on the card, so they get the markdown
+            // stripped rather than turned into HTML — escaping them here would show
+            // the entities, since Blade escapes them again on the way out
+            $headline = $this->plainMarkdown($highlights[0][1]);
+
+            $intro = $unreleased
+                ? 'Not out yet: this entry has no release date, so the demo dates it in the future — invisible on the site and waiting in the panel.'
+                : Str::limit($this->plainMarkdown($highlights[0][2]), 180);
+
+            // Keep a Changelog groups an entry under Added, Fixed, Changed and the
+            // like — exactly the filter a changelog wants, and already in the file
+            preg_match_all('/^### (.+)$/m', $body, $sections);
+
+            $items[] = [
+                'image' => 'abstract/0'.(count($items) % 8 + 1).'.jpg',
+                'tags' => array_merge([$package], array_map(trim(...), $sections[1])),
+                'published' => $published,
+                'title' => $this->titleWithLanguageNote($package.' '.($unreleased ? 'unreleased' : $version).' — '.Str::limit($headline, 65)),
+                'intro' => $this->bothLocales($intro),
+                'head' => $this->bothLocales('In this release'),
+                'body' => $this->bothLocales(
+                    '<ul><li>'.collect($highlights)->map(fn (array $h): string => $this->inlineMarkdown($h[1]))->implode('</li><li>').'</li></ul>'
+                    .'<p><a href="https://github.com/nickdekruijk/'.strtolower($package === 'Template' ? 'leap-template' : 'leap').'/blob/master/CHANGELOG.md">The full entry in the changelog</a></p>'
+                ),
+            ];
+        }
+
+        return $items;
+    }
+
+    /**
+     * A package's changelog: the installed copy when there is one, otherwise the one
+     * on GitHub. The demo host installs without dev dependencies, so the template's
+     * copy is not on disk there — and reading it over HTTP beats leaving half the
+     * releases out.
+     *
+     * The reset runs unattended, so a slow or unreachable GitHub must not hold it up:
+     * a short timeout, and any failure at all simply means no releases from that
+     * package this time.
+     */
+    protected function changelogOf(string $package): ?string
+    {
+        if (File::exists($file = base_path('vendor/'.$package.'/CHANGELOG.md'))) {
+            return File::get($file);
+        }
+
+        try {
+            $response = Http::timeout(5)->get('https://raw.githubusercontent.com/'.$package.'/master/CHANGELOG.md');
+
+            return $response->successful() ? $response->body() : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * The same title in every locale, but the ones that are not the site's default get
+     * it flagged: a Dutch reader scanning the releases would otherwise be looking at a
+     * page of English with no explanation of why. The marker is translated, so a site
+     * with other locales says it in theirs — and falls back to the English words,
+     * which describe themselves.
+     *
+     * @return array<string, string>
+     */
+    protected function titleWithLanguageNote(string $title): array
+    {
+        $default = array_key_first(config('leap.locales') ?: ['en' => 'English']);
+
+        return collect(array_keys(config('leap.locales') ?: ['en' => 'English']))
+            ->mapWithKeys(fn (string $locale): array => [
+                $locale => $locale === $default ? $title : $title.' ('.__('English only', [], $locale).')',
+            ])->all();
+    }
+
+    /**
+     * The changelog is written in English and release notes are not translated, so
+     * both locales get the same text rather than a machine-made Dutch one.
+     *
+     * @return array<string, string>
+     */
+    protected function bothLocales(string $text): array
+    {
+        return collect(array_keys(config('leap.locales') ?: ['en' => 'English']))
+            ->mapWithKeys(fn (string $locale): array => [$locale => $text])
+            ->all();
+    }
+
+    /**
+     * The same headline without any markup at all, for the places that are plain text.
+     */
+    protected function plainMarkdown(string $text): string
+    {
+        $text = preg_replace('/`([^`]+)`/', '$1', trim($text));
+
+        return trim(preg_replace('/\[([^\]]+)\]\(([^)]+)\)/', '$1', $text));
+    }
+
+    /**
+     * Just enough markdown for a changelog headline: code spans and links.
+     */
+    protected function inlineMarkdown(string $text): string
+    {
+        $text = e(trim($text));
+        $text = preg_replace('/`([^`]+)`/', '<code>$1</code>', $text);
+
+        return preg_replace('/\[([^\]]+)\]\(([^)]+)\)/', '<a href="$2">$1</a>', $text);
     }
 
     protected function seedNews(): void
@@ -385,14 +910,14 @@ class DemoSeeder extends Seeder
             return;
         }
 
-        foreach ($this->content['news'] as $index => $item) {
+        foreach ($this->releasesFromChangelog() ?: $this->content['news'] as $index => $item) {
             $news = News::create($this->item($item) + [
-                // Spread backwards from a fortnight ago, so the overview reads the same
-                // after every reset and nothing is dated in the future.
-                'published_at' => now()->subDays(2)->subWeeks($index),
+                // Released versions keep their real date; the one that is not out yet
+                // is dated relative to now, so it stays in the future after every reset
+                'published_at' => Carbon::parse($item['published']),
             ]);
 
-            $this->attachTags($news, $index);
+            $this->attachTags($news, $item['tags'] ?? []);
             $this->attachImage($news, $item['image'] ?? null, 'images', $item['title']);
         }
     }
@@ -403,46 +928,48 @@ class DemoSeeder extends Seeder
             return;
         }
 
-        // Times are as deliberate as the dates: the last two upcoming events are the
-        // cases the model has rules for — one that never says when it stops, and one
-        // that ends after midnight and therefore finishes the next day.
+        // The times are the point of these items: all day, a start without an end, and
+        // an end before its start — the three cases the model derives ends_at from.
         $upcoming = [
-            ['start_time' => '10:00', 'end_time' => '17:00'],
-            ['start_time' => '13:30', 'end_time' => '17:00'],
-            ['start_time' => '20:00', 'end_time' => '21:30'],
-            ['start_time' => '10:00', 'end_time' => '14:00'],
-            ['start_time' => '17:00', 'end_time' => null],
-            ['start_time' => '20:00', 'end_time' => '02:30'],
+            ['weeks' => 1, 'start_time' => '13:30', 'end_time' => '17:00'],
+            ['weeks' => 2, 'start_time' => null, 'end_time' => null],
+            ['weeks' => 3, 'start_time' => '17:00', 'end_time' => null],
+            ['weeks' => 4, 'start_time' => '20:00', 'end_time' => '02:30'],
+            ['weeks' => 5, 'start_time' => '10:00', 'end_time' => '16:00'],
+            ['weeks' => 6, 'start_time' => '19:30', 'end_time' => '21:00'],
         ];
 
         foreach ($this->content['events']['future'] as $index => $item) {
-            $event = Event::create($this->item($item) + $upcoming[$index] + [
-                'date' => now()->addWeeks($index + 1)->startOfDay(),
+            $event = Event::create($this->item($item) + [
+                'date' => now()->addWeeks($upcoming[$index]['weeks'])->startOfDay(),
+                'start_time' => $upcoming[$index]['start_time'],
+                'end_time' => $upcoming[$index]['end_time'],
             ]);
 
-            $this->attachTags($event, $index);
+            // The fifth item is the one the tag-fixed row on Sections › Options points
+            // at, so it gets that exact tag rather than the rotation's
+            $this->attachTags($event, $item['tags'] ?? []);
+
             $this->attachImage($event, $item['image'] ?? null, 'images', $item['title']);
         }
 
-        // Finished events are pinned to the day of the year their copy talks about, so
-        // a spring market is never dated to November whatever month the demo resets in.
         $finished = [
-            ['month' => 4, 'day' => 12, 'start_time' => '11:00', 'end_time' => '17:00'],
-            ['month' => 3, 'day' => 8, 'start_time' => '13:00', 'end_time' => '16:30'],
-            ['month' => 10, 'day' => 3, 'start_time' => '09:30', 'end_time' => '12:00'],
-            ['month' => 9, 'day' => 19, 'start_time' => '20:00', 'end_time' => '22:00'],
-            ['month' => 12, 'day' => 5, 'start_time' => '12:00', 'end_time' => '18:00'],
-            ['month' => 1, 'day' => 6, 'start_time' => '09:00', 'end_time' => '11:00'],
+            ['weeks' => 3, 'start_time' => '19:00', 'end_time' => '21:00'],
+            ['weeks' => 6, 'start_time' => '14:00', 'end_time' => '17:00'],
+            ['weeks' => 13, 'start_time' => null, 'end_time' => null],
+            ['weeks' => 17, 'start_time' => '20:00', 'end_time' => '01:30'],
+            ['weeks' => 26, 'start_time' => '10:00', 'end_time' => '12:00'],
+            ['weeks' => 48, 'start_time' => '09:30', 'end_time' => '17:00'],
         ];
 
         foreach ($this->content['events']['past'] as $index => $item) {
             $event = Event::create($this->item($item) + [
-                'date' => $this->mostRecent($finished[$index]['month'], $finished[$index]['day']),
+                'date' => now()->subWeeks($finished[$index]['weeks'])->startOfDay(),
                 'start_time' => $finished[$index]['start_time'],
                 'end_time' => $finished[$index]['end_time'],
             ]);
 
-            $this->attachTags($event, $index + 3);
+            $this->attachTags($event, $item['tags'] ?? []);
             $this->attachImage($event, $item['image'] ?? null, 'images', $item['title']);
         }
     }
@@ -456,15 +983,14 @@ class DemoSeeder extends Seeder
         foreach ($this->content['projects'] as $index => $item) {
             $project = Project::create($this->item($item) + ['sort' => $index + 1]);
 
-            $this->attachTags($project, $index);
+            $this->attachTags($project, $item['tags'] ?? []);
             $this->attachImage($project, $item['image'] ?? null, 'images', $item['title']);
         }
     }
 
     /**
      * The columns every content type shares: what a visitor reads on the card and on
-     * the detail page. The one text section has an image position but no image —
-     * upload one in the admin panel and the layout is there waiting for it.
+     * the detail page.
      *
      * @param  array<string, mixed>  $item
      * @return array<string, mixed>
@@ -487,18 +1013,18 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * Put a generated photograph on the public disk and hang it off a model, the way
-     * the editor's own syncMedia() does: nothing goes into the sections JSON, the
+     * Put a generated image on the public disk and hang it off a model, the way the
+     * editor's own syncMedia() does: nothing goes into the sections JSON, the
      * attachment is a leap_mediables row naming the attribute it belongs to
      * ('images' for a whole item, 'sections.{key}.image' for one section of a page).
      *
-     * Missing source file is not an error. The images are generated once by
-     * demo:images and committed, but a clone without them still has to seed a
-     * working site — it simply gets the placeholder gradients instead.
+     * A missing source file is not an error. The images are generated once by
+     * demo:images and committed, but a clone without them still has to seed a working
+     * site — it simply gets the placeholder gradients instead.
      *
      * @param  array<string, string>  $alt  Alt text per locale
      */
-    protected function attachImage(Model $model, ?string $file, string $attribute, array $alt = []): void
+    protected function attachImage(Model $model, ?string $file, string $attribute, array $alt = [], int $sort = 0): void
     {
         if (! $file || ! File::exists($source = database_path('seeders/demo-images/'.$file))) {
             return;
@@ -521,6 +1047,7 @@ class DemoSeeder extends Seeder
         Mediable::where('mediable_type', $model::class)
             ->where('mediable_id', $model->id)
             ->where('mediable_attribute', $attribute)
+            ->where('sort', $sort)
             ->delete();
 
         Mediable::create([
@@ -528,13 +1055,13 @@ class DemoSeeder extends Seeder
             'mediable_type' => $model::class,
             'mediable_id' => $model->id,
             'mediable_attribute' => $attribute,
-            'sort' => 0,
+            'sort' => $sort,
         ]);
     }
 
     /**
-     * The photographs on a page, keyed by the array position of the section they
-     * belong to — the key in the sections JSON, not its _sort.
+     * The images on a page, keyed by the array position of the section they belong to
+     * — the key in the sections JSON, not its _sort.
      *
      * @param  array<int, string>  $images
      */
@@ -551,41 +1078,31 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * One or two tags per item, rotating through the set rather than drawn at random
-     * so the filter chips above each overview hold the same items after a reset.
+     * The tags an item names, by their English label. A tag the vocabulary does not
+     * have yet is created on the spot — that is how the changelog's own Added, Fixed
+     * and Changed headings become chips above the releases.
+     *
+     * @param  array<int, string>  $names
      */
-    protected function attachTags(News|Event|Project $item, int $index): void
+    protected function attachTags(News|Event|Project $item, array $names): void
     {
-        $tags = Tag::orderBy('sort')->pluck('id');
+        $ids = collect($names)->map(function (string $name): int {
+            $labels = self::TAGS[$name] ?? ['en' => $name, 'nl' => $name];
 
-        if ($tags->isEmpty()) {
-            return;
-        }
-
-        $ids = [$tags[$index % $tags->count()]];
-
-        if ($index % 3 !== 0) {
-            $ids[] = $tags[($index + 2) % $tags->count()];
-        }
+            return Tag::firstOrCreate(
+                ['name->en' => $labels['en']],
+                ['name' => $labels, 'sort' => Tag::max('sort') + 1],
+            )->id;
+        })->all();
 
         $item->tags()->sync($ids);
     }
 
     /**
-     * The most recent occurrence of a day of the year, this year or last. Today
-     * counts as last year's: an event held earlier today has not finished yet at
-     * every hour of the day, and these are the ones that have to be over.
-     */
-    protected function mostRecent(int $month, int $day): Carbon
-    {
-        $date = Carbon::create(now()->year, $month, $day)->startOfDay();
-
-        return $date->greaterThanOrEqualTo(now()->startOfDay()) ? $date->subYear() : $date;
-    }
-
-    /**
-     * Footer settings, when the settings package is installed. socials and
-     * footer_links take "label:url" per line (the ':' key separator of setting_array()).
+     * Footer settings, when the settings package is installed. The two script fields
+     * carry a commented-out snippet so the consent parking mechanism has something to
+     * park: the template renders them inside a <template data-consent> that only runs
+     * once the visitor allows that category.
      */
     protected function seedSettings(): void
     {
@@ -596,35 +1113,35 @@ class DemoSeeder extends Seeder
         Setting::set([
             'html_head' => [
                 'value' => '',
-                'description' => 'Code direct vóór </head>. Alleen voor code die GÉÉN toestemming vereist — trackers horen in de scripts_-instellingen, anders draaien ze buiten het cookiesysteem om.',
+                'description' => 'Code right before </head>. Only for code that needs no consent — trackers belong in the scripts_ settings, or they run outside the consent system.',
             ],
             'scripts_analytics' => [
-                'value' => '',
-                'description' => 'Statistiek-scripts (bijv. Google Analytics): plak hier de code van de leverancier. Draait pas nadat de bezoeker statistieken heeft toegestaan.',
+                'value' => "<!-- Paste your analytics snippet here. It is parked in a <template>\n     until the visitor allows the statistics category. -->",
+                'description' => 'Statistics scripts (e.g. Google Analytics). Runs only after the visitor allows statistics.',
             ],
             'scripts_embeds' => [
-                'value' => '',
-                'description' => 'Scripts voor ingesloten inhoud. Draait pas nadat de bezoeker die inhoud toestaat.',
+                'value' => "<!-- Snippets for embedded content go here, parked the same way\n     until the visitor allows embedded content. -->",
+                'description' => 'Scripts for embedded content. Runs only after the visitor allows it.',
             ],
             'footer_contact' => [
-                'value' => "Voorbeeldstraat 1\n3511 AB Utrecht\ninfo@example.com",
-                'description' => 'Adres/contactgegevens in de footer',
+                'value' => "Leap demo\nA starting point, not a finished site\ninfo@example.com",
+                'description' => 'Address/contact details in the footer',
             ],
             'socials' => [
-                'value' => "instagram:https://instagram.com\nlinkedin:https://linkedin.com\nfacebook:https://facebook.com",
-                'description' => 'Social media, één "naam:url" per regel (naam = FontAwesome brand-icoon)',
+                'value' => 'github:https://github.com/nickdekruijk/leap',
+                'description' => 'Social media, one "name:url" per line (name = FontAwesome brand icon)',
             ],
             'footer_copyright' => [
-                'value' => '© '.date('Y').' '.config('app.name'),
-                'description' => 'Copyright-regel onderaan de footer',
+                'value' => '© '.date('Y').' '.config('app.name').' — MIT licensed, rebuilt every 15 minutes',
+                'description' => 'Copyright line at the bottom of the footer',
             ],
             'footer_links' => [
-                'value' => "Privacy:/privacy\nAlgemene voorwaarden:/algemene-voorwaarden",
-                'description' => 'Footer-links, één "label:url" per regel',
+                'value' => "Privacy:/privacy\nTerms:/terms",
+                'description' => 'Footer links, one "label:url" per line',
             ],
             'og_image' => [
-                'value' => '',
-                'description' => 'Standaard social-share afbeelding (URL of /storage-pad); pagina-eigen afbeelding gaat voor',
+                'value' => '/storage/slides/01.jpg',
+                'description' => 'Default social share image (URL or /storage path); a page\'s own image wins',
             ],
         ]);
     }
