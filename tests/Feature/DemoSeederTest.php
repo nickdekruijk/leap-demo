@@ -12,6 +12,9 @@ use Database\Seeders\DemoSeeder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use NickDeKruijk\Leap\Models\Mediable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Concerns\ResolvesContentPaths;
 use Tests\TestCase;
@@ -193,6 +196,81 @@ class DemoSeederTest extends TestCase
     public function test_projects_are_ordered_by_hand(): void
     {
         $this->assertSame([1, 2, 3, 4, 5, 6], Project::orderBy('sort')->pluck('sort')->all());
+    }
+
+    /**
+     * The manifest and the copy have to agree even on a clone that has never run
+     * demo:images: an item pointing at a photograph nobody generates would fail
+     * silently, showing a placeholder gradient and nothing else.
+     */
+    public function test_every_item_points_at_a_photograph_the_manifest_describes(): void
+    {
+        $manifest = require database_path('seeders/demo-images.php');
+        $content = require database_path('seeders/demo-content.php');
+
+        $used = collect([$content['news'], $content['events']['future'], $content['events']['past'], $content['projects']])
+            ->flatten(1)
+            ->pluck('image');
+
+        $this->assertCount(24, $used->filter(), 'Every content item names an image.');
+        $this->assertSame($used->unique()->count(), $used->count(), 'No two items share a photograph.');
+
+        foreach ($used as $file) {
+            $this->assertArrayHasKey($file, $manifest['images'], "{$file} is used but not in the manifest.");
+        }
+
+        $items = collect($manifest['images'])->keys()->reject(fn (string $path): bool => str_starts_with($path, 'pages/'));
+
+        $this->assertEqualsCanonicalizing($used->all(), $items->all(), 'The manifest describes exactly the item photographs in use.');
+    }
+
+    /**
+     * @param  class-string<Model>  $model
+     */
+    #[DataProvider('contentTypes')]
+    public function test_every_item_carries_its_photograph(string $model): void
+    {
+        $this->skipWithoutImages();
+
+        foreach ($model::all() as $item) {
+            $media = $item->media;
+
+            $this->assertCount(1, $media, 'An item has exactly one photograph.');
+            $this->assertSame('images', $media->first()->pivot->mediable_attribute);
+            Storage::disk('public')->assertExists($media->first()->file_name);
+            $this->assertNotEmpty($media->first()->alt('nl'));
+            $this->assertNotEmpty($media->first()->alt('en'));
+        }
+    }
+
+    /**
+     * A section's photograph is not in the sections JSON but in a pivot row naming
+     * the section's own array key, which is the part that is easy to get wrong.
+     */
+    public function test_the_pages_carry_their_section_photographs(): void
+    {
+        $this->skipWithoutImages();
+
+        $home = Mediable::where('mediable_type', Page::class)->where('mediable_id', 1)->pluck('mediable_attribute');
+
+        $this->assertEqualsCanonicalizing([
+            'sections.0.image', 'sections.1.image', 'sections.2.image',
+            'sections.3.image', 'sections.4.image', 'sections.5.image',
+        ], $home->all());
+
+        foreach ([2, 3, 4] as $id) {
+            $this->assertSame(['sections.0.image'], Mediable::where('mediable_type', Page::class)->where('mediable_id', $id)->pluck('mediable_attribute')->all());
+        }
+
+        // The legal pages are deliberately without
+        $this->assertSame(0, Mediable::where('mediable_type', Page::class)->whereIn('mediable_id', [5, 6])->count());
+    }
+
+    protected function skipWithoutImages(): void
+    {
+        if (! File::exists(database_path('seeders/demo-images/news'))) {
+            $this->markTestSkipped('No photographs generated yet — run demo:images.');
+        }
     }
 
     public function test_it_creates_the_demo_account_as_a_superuser(): void

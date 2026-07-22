@@ -12,6 +12,7 @@ return [
 
     'news' => [
         [
+            'image' => 'news/werkplaats-verhuisd.jpg',
             'title' => ['nl' => 'De werkplaats is verhuisd', 'en' => 'The workshop has moved'],
             'intro' => ['nl' => 'Vanaf deze maand staan de machines twee straten verderop, in een hal met daglicht en ruimte om te groeien.', 'en' => 'From this month the machines stand two streets away, in a hall with daylight and room to grow.'],
             'head' => ['nl' => 'Meer ruimte, meer licht', 'en' => 'More room, more light'],
@@ -21,6 +22,7 @@ return [
             ],
         ],
         [
+            'image' => 'news/zomerprogramma.jpg',
             'title' => ['nl' => 'Zomerprogramma is bekend', 'en' => 'Summer programme announced'],
             'intro' => ['nl' => 'Acht workshops, twee lezingen en elke donderdag een open avond waarop iedereen zonder aanmelding binnen kan lopen.', 'en' => 'Eight workshops, two talks and an open evening every Thursday that anyone can walk into without booking.'],
             'head' => ['nl' => 'Wat er te doen is', 'en' => 'What is on'],
@@ -30,6 +32,7 @@ return [
             ],
         ],
         [
+            'image' => 'news/nieuwe-zeefdrukpers.jpg',
             'title' => ['nl' => 'Nieuwe zeefdrukpers in gebruik', 'en' => 'New screen printing press in use'],
             'intro' => ['nl' => 'De handpers uit 1978 gaat met pensioen. Zijn opvolger drukt tot A1 en is een stuk vriendelijker voor de rug.', 'en' => 'The 1978 hand press is retiring. Its successor prints up to A1 and is a good deal kinder to the back.'],
             'head' => ['nl' => 'Groter formaat, minder tillen', 'en' => 'Bigger format, less lifting'],
@@ -39,6 +42,7 @@ return [
             ],
         ],
         [
+            'image' => 'news/voorjaarsseizoen.jpg',
             'title' => ['nl' => 'Terugblik op het voorjaarsseizoen', 'en' => 'Looking back at the spring season'],
             'intro' => ['nl' => 'Ruim vierhonderd bezoekers, negentien workshops en een markt die drukker was dan we hadden durven hopen.', 'en' => 'Over four hundred visitors, nineteen workshops and a market busier than we had dared hope.'],
             'head' => ['nl' => 'Het seizoen in cijfers', 'en' => 'The season in numbers'],
@@ -48,6 +52,7 @@ return [
             ],
         ],
         [
+            'image' => 'news/vrijwilligers-gezocht.jpg',
             'title' => ['nl' => 'Vrijwilligers gezocht voor de weekendopening', 'en' => 'Volunteers wanted for weekend opening'],
             'intro' => ['nl' => 'We willen op zondagmiddag open, en daarvoor zoeken we een handvol mensen die het leuk vindt om gastheer te zijn.', 'en' => 'We want to open on Sunday afternoons, and we are looking for a handful of people who enjoy playing host.'],
             'head' => ['nl' => 'Wat het inhoudt', 'en' => 'What it involves'],
@@ -57,6 +62,7 @@ return [
             ],
         ],
         [
+            'image' => 'news/samenwerking-bibliotheek.jpg',
             'title' => ['nl' => 'Samenwerking met de bibliotheek', 'en' => 'Working together with the library'],
             'intro' => ['nl' => 'Vanaf het najaar staat er een kleine drukpers in de bibliotheek, en verzorgen wij daar maandelijks een workshop.', 'en' => 'From autumn a small press will stand in the library, and we will run a monthly workshop there.'],
             'head' => ['nl' => 'Buiten de eigen muren', 'en' => 'Beyond our own walls'],
@@ -71,6 +77,7 @@ return [
 
         'future' => [
             [
+                'image' => 'events/open-werkplaats.jpg',
                 'title' => ['nl' => 'Open werkplaats', 'en' => 'Open workshop'],
                 'intro' => ['nl' => 'Loop binnen, kijk rond en probeer een techniek uit. Geen aanmelding, geen kosten.', 'en' => 'Walk in, look around and try a technique. No booking, no charge.'],
                 'head' => ['nl' => 'Zomaar binnenlopen', 'en' => 'Just walk in'],
@@ -80,6 +87,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/workshop-zeefdrukken.jpg',
                 'title' => ['nl' => 'Workshop zeefdrukken', 'en' => 'Screen printing workshop'],
                 'intro' => ['nl' => 'In één middag van ontwerp naar een eigen affiche in twee kleuren, gedrukt op de grote pers.', 'en' => 'From design to your own two-colour poster in a single afternoon, printed on the big press.'],
                 'head' => ['nl' => 'Wat je leert', 'en' => 'What you will learn'],
@@ -89,6 +97,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/lezing-kleur.jpg',
                 'title' => ['nl' => 'Lezing: kleur in de openbare ruimte', 'en' => 'Talk: colour in public space'],
                 'intro' => ['nl' => 'Waarom is een stad grijs, en wat gebeurt er als je daar bewust van afwijkt?', 'en' => 'Why is a city grey, and what happens when you deliberately depart from that?'],
                 'head' => ['nl' => 'Over de spreker', 'en' => 'About the speaker'],
@@ -98,6 +107,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/repair-cafe.jpg',
                 'title' => ['nl' => 'Repair café', 'en' => 'Repair café'],
                 'intro' => ['nl' => 'Neem mee wat kapot is. Samen kijken we of het weer aan de praat te krijgen is.', 'en' => 'Bring whatever is broken. Together we will see if it can be got going again.'],
                 'head' => ['nl' => 'Wat we kunnen maken', 'en' => 'What we can fix'],
@@ -107,6 +117,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/vrijdagmiddagborrel.jpg',
                 'title' => ['nl' => 'Vrijdagmiddagborrel', 'en' => 'Friday afternoon drinks'],
                 'intro' => ['nl' => 'De week afsluiten in de hal, met muziek en zo lang als het duurt.', 'en' => 'Closing the week in the hall, with music, for as long as it lasts.'],
                 'head' => ['nl' => 'Tot laat', 'en' => 'Until late'],
@@ -116,6 +127,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/drukmarathon.jpg',
                 'title' => ['nl' => 'Nachtelijke drukmarathon', 'en' => 'Overnight print marathon'],
                 'intro' => ['nl' => 'Van de avond tot diep in de nacht doorwerken aan één gezamenlijke oplage.', 'en' => 'Working from evening deep into the night on one shared print run.'],
                 'head' => ['nl' => 'Hoe het werkt', 'en' => 'How it works'],
@@ -128,6 +140,7 @@ return [
 
         'past' => [
             [
+                'image' => 'events/voorjaarsmarkt.jpg',
                 'title' => ['nl' => 'Voorjaarsmarkt', 'en' => 'Spring market'],
                 'intro' => ['nl' => 'Dertig makers, twee straten en het mooiste weer dat we ooit voor een markt hebben gehad.', 'en' => 'Thirty makers, two streets and the best weather we have ever had for a market.'],
                 'head' => ['nl' => 'Hoe het was', 'en' => 'How it went'],
@@ -137,6 +150,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/workshop-boekbinden.jpg',
                 'title' => ['nl' => 'Workshop boekbinden', 'en' => 'Bookbinding workshop'],
                 'intro' => ['nl' => 'Twaalf deelnemers gingen naar huis met een eigen genaaid schetsboek.', 'en' => 'Twelve participants went home with a hand-sewn sketchbook of their own.'],
                 'head' => ['nl' => 'Het resultaat', 'en' => 'The result'],
@@ -146,6 +160,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/rondleiding-scholen.jpg',
                 'title' => ['nl' => 'Rondleiding voor scholen', 'en' => 'School tour'],
                 'intro' => ['nl' => 'Twee brugklassen langs de machines, met aan het eind een eigen druk om mee te nemen.', 'en' => 'Two first-year classes along the machines, each leaving with a print of their own.'],
                 'head' => ['nl' => 'Wat opviel', 'en' => 'What stood out'],
@@ -155,6 +170,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/lezing-duurzaam-ontwerpen.jpg',
                 'title' => ['nl' => 'Lezing: duurzaam ontwerpen', 'en' => 'Talk: designing sustainably'],
                 'intro' => ['nl' => 'Over materiaalkeuze, levensduur en de vraag of iets überhaupt gemaakt moet worden.', 'en' => 'On choosing materials, lifespan and whether a thing needs making at all.'],
                 'head' => ['nl' => 'Nagesprek', 'en' => 'Afterwards'],
@@ -164,6 +180,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/winterexpositie.jpg',
                 'title' => ['nl' => 'Winterexpositie', 'en' => 'Winter exhibition'],
                 'intro' => ['nl' => 'Werk van vijftien makers die het afgelopen jaar in de werkplaats te vinden waren.', 'en' => 'Work by fifteen makers who spent the past year in the workshop.'],
                 'head' => ['nl' => 'De tentoonstelling', 'en' => 'The exhibition'],
@@ -173,6 +190,7 @@ return [
                 ],
             ],
             [
+                'image' => 'events/nieuwjaarsontbijt.jpg',
                 'title' => ['nl' => 'Nieuwjaarsontbijt', 'en' => 'New year\'s breakfast'],
                 'intro' => ['nl' => 'Het jaar beginnen aan één lange tafel, met plannen die nog nergens op vastzitten.', 'en' => 'Starting the year at one long table, with plans not yet pinned to anything.'],
                 'head' => ['nl' => 'Aan tafel', 'en' => 'At the table'],
@@ -186,6 +204,7 @@ return [
 
     'projects' => [
         [
+            'image' => 'projects/bibliotheekplein.jpg',
             'title' => ['nl' => 'Herinrichting van het bibliotheekplein', 'en' => 'Redesign of the library square'],
             'intro' => ['nl' => 'Van doorgangsgebied naar plek om te blijven, met banken, bomen en bewegwijzering in één handschrift.', 'en' => 'From thoroughfare to a place to stay, with benches, trees and signage in one hand.'],
             'head' => ['nl' => 'De opgave', 'en' => 'The brief'],
@@ -195,6 +214,7 @@ return [
             ],
         ],
         [
+            'image' => 'projects/buurtfestival-huisstijl.jpg',
             'title' => ['nl' => 'Huisstijl voor een buurtfestival', 'en' => 'Identity for a neighbourhood festival'],
             'intro' => ['nl' => 'Eén affiche dat in vier kleuren steeds anders is, zodat elke editie herkenbaar én nieuw blijft.', 'en' => 'One poster, different in four colours each time, so every edition stays recognisable and new.'],
             'head' => ['nl' => 'Uitgangspunt', 'en' => 'The starting point'],
@@ -204,6 +224,7 @@ return [
             ],
         ],
         [
+            'image' => 'projects/bewegwijzering-stadspark.jpg',
             'title' => ['nl' => 'Bewegwijzering in het stadspark', 'en' => 'Wayfinding in the city park'],
             'intro' => ['nl' => 'Twaalf palen die je de weg wijzen zonder dat je stil hoeft te staan om ze te lezen.', 'en' => 'Twelve posts that show the way without your having to stop to read them.'],
             'head' => ['nl' => 'Leesbaar in beweging', 'en' => 'Readable on the move'],
@@ -213,6 +234,7 @@ return [
             ],
         ],
         [
+            'image' => 'projects/jaarverslag.jpg',
             'title' => ['nl' => 'Jaarverslag in print en online', 'en' => 'Annual report in print and online'],
             'intro' => ['nl' => 'Een verslag dat je ook echt uitleest, met dezelfde opmaak op papier als op het scherm.', 'en' => 'A report you actually finish reading, laid out the same on paper as on screen.'],
             'head' => ['nl' => 'Twee dragers, één vorm', 'en' => 'Two carriers, one form'],
@@ -222,6 +244,7 @@ return [
             ],
         ],
         [
+            'image' => 'projects/meubels-reststromen.jpg',
             'title' => ['nl' => 'Meubels van reststromen', 'en' => 'Furniture from waste materials'],
             'intro' => ['nl' => 'Een serie tafels en krukken uit het hout dat bij verbouwingen overblijft.', 'en' => 'A series of tables and stools from the wood left over by building work.'],
             'head' => ['nl' => 'Van restpartij naar serie', 'en' => 'From offcuts to a series'],
@@ -231,6 +254,7 @@ return [
             ],
         ],
         [
+            'image' => 'projects/tentoonstelling-makers.jpg',
             'title' => ['nl' => 'Tentoonstelling over lokale makers', 'en' => 'Exhibition on local makers'],
             'intro' => ['nl' => 'Portretten en werk van twintig mensen die binnen een kilometer van de werkplaats iets maken.', 'en' => 'Portraits and work by twenty people making something within a kilometre of the workshop.'],
             'head' => ['nl' => 'Opzet', 'en' => 'Set-up'],

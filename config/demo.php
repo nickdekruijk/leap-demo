@@ -36,4 +36,13 @@ return [
         'video-posters/youtube-dQw4w9WgXcQ.jpg',
     ],
 
+    // The OpenAI model demo:images generates the seeded photographs with. Its
+    // key comes from leap.ai.providers.openai, so no second credential.
+    'image_model' => env('DEMO_IMAGE_MODEL', 'gpt-image-2'),
+
+    // Image quality, and with it the price: left on 'auto' the model decides for
+    // itself and a detailed prompt lands on the expensive end. The site never
+    // shows these wider than 1600px, so a fixed middle setting is enough.
+    'image_quality' => env('DEMO_IMAGE_QUALITY', 'medium'),
+
 ];

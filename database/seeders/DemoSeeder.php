@@ -8,8 +8,13 @@ use App\Models\Page;
 use App\Models\Project;
 use App\Models\Tag;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use NickDeKruijk\Leap\Models\Media;
+use NickDeKruijk\Leap\Models\Mediable;
 use NickDeKruijk\Leap\Models\Role;
 use NickDeKruijk\Settings\Setting;
 
@@ -54,6 +59,7 @@ class DemoSeeder extends Seeder
         $this->seedDemoUser();
         $this->seedTags();
         $this->seedPages();
+        $this->seedPageImages();
         $this->seedOverviewPages();
         $this->seedNews();
         $this->seedEvents();
@@ -305,6 +311,28 @@ class DemoSeeder extends Seeder
     }
 
     /**
+     * The photographs on the pages, keyed by the array position of the section they
+     * belong to. Home's first six sections are its three slides and the three text
+     * sections that demonstrate the image positions; the teasers below them show the
+     * items' own images, and the legal pages stay without.
+     */
+    protected function seedPageImages(): void
+    {
+        $this->attachSectionImages(Page::find(1), [
+            0 => 'pages/home-slide-open.jpg',
+            1 => 'pages/home-slide-leren.jpg',
+            2 => 'pages/home-slide-beheer.jpg',
+            3 => 'pages/home-wie-hier-komen.jpg',
+            4 => 'pages/home-wat-er-staat.jpg',
+            5 => 'pages/home-zelf-aan-de-slag.jpg',
+        ]);
+
+        $this->attachSectionImages(Page::find(2), [0 => 'pages/over-ons.jpg']);
+        $this->attachSectionImages(Page::find(3), [0 => 'pages/diensten.jpg']);
+        $this->attachSectionImages(Page::find(4), [0 => 'pages/contact.jpg']);
+    }
+
+    /**
      * The teaser rows on the home page: the same section a content type renders on
      * its overview, but limited to a handful of items.
      *
@@ -365,6 +393,7 @@ class DemoSeeder extends Seeder
             ]);
 
             $this->attachTags($news, $index);
+            $this->attachImage($news, $item['image'] ?? null, 'images', $item['title']);
         }
     }
 
@@ -392,6 +421,7 @@ class DemoSeeder extends Seeder
             ]);
 
             $this->attachTags($event, $index);
+            $this->attachImage($event, $item['image'] ?? null, 'images', $item['title']);
         }
 
         // Finished events are pinned to the day of the year their copy talks about, so
@@ -413,6 +443,7 @@ class DemoSeeder extends Seeder
             ]);
 
             $this->attachTags($event, $index + 3);
+            $this->attachImage($event, $item['image'] ?? null, 'images', $item['title']);
         }
     }
 
@@ -426,6 +457,7 @@ class DemoSeeder extends Seeder
             $project = Project::create($this->item($item) + ['sort' => $index + 1]);
 
             $this->attachTags($project, $index);
+            $this->attachImage($project, $item['image'] ?? null, 'images', $item['title']);
         }
     }
 
@@ -452,6 +484,70 @@ class DemoSeeder extends Seeder
                 'body' => $item['body'],
             ]],
         ];
+    }
+
+    /**
+     * Put a generated photograph on the public disk and hang it off a model, the way
+     * the editor's own syncMedia() does: nothing goes into the sections JSON, the
+     * attachment is a leap_mediables row naming the attribute it belongs to
+     * ('images' for a whole item, 'sections.{key}.image' for one section of a page).
+     *
+     * Missing source file is not an error. The images are generated once by
+     * demo:images and committed, but a clone without them still has to seed a
+     * working site — it simply gets the placeholder gradients instead.
+     *
+     * @param  array<string, string>  $alt  Alt text per locale
+     */
+    protected function attachImage(Model $model, ?string $file, string $attribute, array $alt = []): void
+    {
+        if (! $file || ! File::exists($source = database_path('seeders/demo-images/'.$file))) {
+            return;
+        }
+
+        Storage::disk('public')->put($file, File::get($source));
+
+        $media = Media::forFile($file);
+
+        if (! $media) {
+            return;
+        }
+
+        if ($alt) {
+            // meta is cast but not fillable, so it is assigned rather than created with
+            $media->meta = ['alt' => $alt] + ($media->meta ?? []);
+            $media->save();
+        }
+
+        Mediable::where('mediable_type', $model::class)
+            ->where('mediable_id', $model->id)
+            ->where('mediable_attribute', $attribute)
+            ->delete();
+
+        Mediable::create([
+            'media_id' => $media->id,
+            'mediable_type' => $model::class,
+            'mediable_id' => $model->id,
+            'mediable_attribute' => $attribute,
+            'sort' => 0,
+        ]);
+    }
+
+    /**
+     * The photographs on a page, keyed by the array position of the section they
+     * belong to — the key in the sections JSON, not its _sort.
+     *
+     * @param  array<int, string>  $images
+     */
+    protected function attachSectionImages(Page $page, array $images): void
+    {
+        // Read the raw column rather than the accessor: that one wraps every section
+        // in an ArrayObject and sorts by _sort, while the attribute name has to carry
+        // the array key the section is stored under.
+        $sections = json_decode($page->getRawOriginal('sections') ?: '[]', true);
+
+        foreach ($images as $index => $file) {
+            $this->attachImage($page, $file, "sections.{$index}.image", $sections[$index]['head'] ?? []);
+        }
     }
 
     /**
