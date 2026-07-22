@@ -383,6 +383,22 @@ return [
             'provider' => null, // 'gemini' | 'claude' | 'openai' (vision required)
             'model' => null,    // null => gemini-2.5-flash / claude-haiku-4-5 / gpt-4o-mini
         ],
+        // Generate an image from a prompt: in the editor next to a media field's browse
+        // button (prefilled from the section's own content) and in the file manager.
+        'image' => [
+            'provider' => 'openai', // 'gemini' | 'openai' (Claude and DeepL cannot generate images)
+            'model' => null,    // null => gemini-2.5-flash-image / gpt-image-1-mini
+            // Where generated images are stored on the filemanager disk. {module} is the
+            // module's folder name, so a Page lands in pages/ and a News item in news/.
+            // Set a literal ('ai') to collect them in one folder, or combine: 'ai/{module}'.
+            'folder' => '{module}',
+            'aspect_ratios' => ['16:9', '4:3', '1:1', '3:4'], // offered in the generate dialog; the result is cropped to the chosen one
+            'quality' => 'low',       // openai only: 'low' | 'medium' | 'high' | 'auto' (null = provider default)
+            'max_width' => 1920,     // generated images are scaled down to this width
+            'jpeg_quality' => 70,    // encoding quality of the stored JPEG
+            'alt_text' => true,      // also generate alt text for the new image when the alt_text task is configured
+            'style' => null,         // optional house-style sentence appended to every prompt
+        ],
 
         // Translate editor content (per field or all fields) into the active locale.
         'translate' => [
