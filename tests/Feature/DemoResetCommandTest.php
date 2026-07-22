@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use NickDeKruijk\Leap\Models\Media;
 use Tests\TestCase;
 
 /**
@@ -47,8 +48,14 @@ class DemoResetCommandTest extends TestCase
 
         // DemoSeeder ran as the root seeder, so the demo's own copy is back and
         // DatabaseSeeder's test account is not
-        $this->assertSame(6, DB::table('news')->count());
+        $this->assertSame(10, DB::table('news')->count());
         $this->assertDatabaseMissing('users', ['email' => 'test@example.com']);
+
+        // The seeded photographs survive their own reset: cleanStorage() has to run
+        // before the seed writes them, not after
+        if ($seeded = Media::first()) {
+            Storage::disk('public')->assertExists($seeded->file_name);
+        }
 
         Storage::disk('public')->assertExists(config('demo.baseline_files')[0]);
         Storage::disk('public')->assertExists('uploads/.gitignore');

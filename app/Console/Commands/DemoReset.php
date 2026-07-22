@@ -48,6 +48,11 @@ class DemoReset extends Command
         // runs arms a fresh timer instead of being lost
         $cache->forget(config('demo.cache_key'));
 
+        // Sweep the disk first and rebuild after: the seeder puts the demo's own
+        // photographs back on the public disk, and cleaning afterwards would delete
+        // the very files it just wrote.
+        $this->cleanStorage();
+
         // DemoSeeder is the demo's entire state, so it replaces DatabaseSeeder as the
         // root seeder here — test@example.com and the lorem sample content that the
         // stock seeders create have no place on the public demo.
@@ -56,7 +61,6 @@ class DemoReset extends Command
             '--seeder' => DemoSeeder::class,
             '--force' => true,
         ]);
-        $this->cleanStorage();
         $this->call('cache:clear');
 
         $this->info('Demo site reset to seeded state.');

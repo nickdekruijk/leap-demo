@@ -12,6 +12,9 @@ use Database\Seeders\DemoSeeder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use NickDeKruijk\Leap\Models\Mediable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Concerns\ResolvesContentPaths;
 use Tests\TestCase;
@@ -40,17 +43,24 @@ class DemoSeederTest extends TestCase
     }
 
     /**
-     * What the whole seeder exists for: text a visitor can read, in both languages,
-     * instead of the same faker sentence repeated under every locale.
+     * What the hand-written content exists for: text a visitor can read, in both
+     * languages, instead of the same faker sentence repeated under every locale.
      *
      * The intro is what proves the translation: a title can legitimately read the
-     * same in both languages ("Repair café"), a sentence of prose cannot.
+     * same in both languages, a sentence of prose cannot.
+     *
+     * News is exempt — those items are generated from the package's changelog, which
+     * is written in English, and release notes are not translated.
      *
      * @param  class-string<Model>  $model
      */
     #[DataProvider('contentTypes')]
     public function test_every_item_is_written_in_dutch_and_english(string $model): void
     {
+        if ($model === News::class) {
+            $this->markTestSkipped('Release notes come from the English changelog.');
+        }
+
         foreach ($model::all() as $item) {
             $title = $item->getTranslations('title');
             $intro = $item->getTranslations('intro');
@@ -62,24 +72,41 @@ class DemoSeederTest extends TestCase
         }
     }
 
+    /**
+     * Every page but the one that exists to show what an untranslated page does.
+     */
     public function test_every_page_is_written_in_dutch_and_english(): void
     {
-        foreach (Page::all() as $page) {
+        foreach (Page::all()->except(6) as $page) {
             $title = $page->getTranslations('title');
 
-            $this->assertNotEmpty($title['nl']);
+            $this->assertNotEmpty($title['nl'] ?? null, 'Page '.$page->id.' has no Dutch title.');
             $this->assertNotEmpty($title['en']);
         }
     }
 
+    /**
+     * A slug is an address, not prose: without one in a locale the page is not served
+     * there at all, rather than answering on another language's URL.
+     */
+    public function test_the_untranslated_page_has_no_dutch_address(): void
+    {
+        $page = Page::find(6);
+
+        $this->assertSame(['en' => 'untranslated-example'], array_filter($page->getTranslations('slug')));
+        $this->get('/features/multilingual/untranslated-example')->assertOk();
+        $this->get('/nl/functies/meertalig/untranslated-example')->assertNotFound();
+    }
+
     public function test_it_seeds_the_whole_site(): void
     {
-        $this->assertSame(6, News::count());
+        // Five releases per package
+        $this->assertSame(10, News::count());
         $this->assertSame(12, Event::count());
-        $this->assertSame(6, Project::count());
+        $this->assertSame(8, Project::count());
 
-        // Six pages of its own plus an overview per content type
-        $this->assertSame(9, Page::count());
+        // Nine pages of its own plus an overview per content type
+        $this->assertSame(12, Page::count());
     }
 
     /**
@@ -98,8 +125,11 @@ class DemoSeederTest extends TestCase
             $this->assertTrue($section['active']);
             $this->assertNotEmpty($section['head']['nl']);
             $this->assertNotEmpty($section['head']['en']);
-            $this->assertStringStartsWith('<p>', $section['body']['nl']);
-            $this->assertStringStartsWith('<p>', $section['body']['en']);
+            // A release lists its highlights, everything else opens with a paragraph
+            $opening = $model === News::class ? '<ul>' : '<p>';
+
+            $this->assertStringStartsWith($opening, $section['body']['nl']);
+            $this->assertStringStartsWith($opening, $section['body']['en']);
         }
     }
 
@@ -114,6 +144,23 @@ class DemoSeederTest extends TestCase
         }
     }
 
+    /**
+     * The chips above an overview come from the tags its own items carry, so one
+     * shared vocabulary can serve three types without any of them offering a filter
+     * that returns nothing. The releases tag themselves from the changelog's own
+     * Added/Fixed/Changed headings.
+     */
+    public function test_each_overview_offers_tags_that_suit_it(): void
+    {
+        $tagsOf = fn (string $model): array => $model::with('tags')->get()
+            ->flatMap(fn ($item) => $item->tags->map(fn ($tag): string => $tag->getTranslation('name', 'en')))
+            ->unique()->sort()->values()->all();
+
+        $this->assertSame(['Added', 'Changed', 'Fixed', 'Leap', 'Template'], $tagsOf(News::class));
+        $this->assertSame(['Content', 'Dates & times', 'Media'], $tagsOf(Event::class));
+        $this->assertSame(['AI', 'Content', 'Media', 'Panel', 'Privacy'], $tagsOf(Project::class));
+    }
+
     public function test_each_content_type_has_an_overview_its_items_hang_under(): void
     {
         foreach (['events', 'news', 'projects'] as $type) {
@@ -121,11 +168,16 @@ class DemoSeederTest extends TestCase
         }
     }
 
+    /**
+     * The overview page's slug is the base of every detail URL under it, and the demo
+     * renames those overviews — so the path is read from the page rather than from the
+     * translation of the type name.
+     */
     public function test_an_item_detail_page_resolves(): void
     {
-        $news = News::first();
+        $news = News::active()->first();
 
-        $this->get($this->itemPath('News', $news->slug))
+        $this->get('/'.PageController::overviewPage('news')->slug.'/'.$news->slug)
             ->assertOk()
             ->assertSee($news->title);
     }
@@ -151,8 +203,15 @@ class DemoSeederTest extends TestCase
         $home = collect(Page::find(1)->sections);
 
         $this->assertSame('grid', $home->firstWhere('_name', 'projects')['layout']);
-        $this->assertSame(4, $home->firstWhere('_name', 'news')['columns']);
-        $this->assertSame(4, PageController::overviewPage('news')->sections[0]['columns']);
+        $this->assertSame(3, $home->firstWhere('_name', 'news')['columns']);
+        $this->assertSame(3, collect(PageController::overviewPage('news')->sections)->firstWhere('_name', 'news')['columns']);
+
+        // And the child page sets the three that the home page never needs
+        $options = collect(Page::find(3)->sections);
+
+        $this->assertSame('past', $options->firstWhere('head.en', 'Period: past, in a grid of three')['period']);
+        $this->assertSame(1, $options->firstWhere('head.en', 'Fixed to one tag')['tag']);
+        $this->assertSame('horizontal', $options->firstWhere('head.en', 'A horizontal row, two in view')['layout']);
     }
 
     /**
@@ -166,12 +225,14 @@ class DemoSeederTest extends TestCase
     }
 
     /**
-     * The two cases Event has rules for, deliberately in the set rather than left to
-     * chance: an event that never says when it stops, and one that ends after midnight.
+     * The three cases Event derives ends_at from, deliberately in the set rather than
+     * left to chance: no times at all, a start without an end, and an end at or before
+     * the start.
      */
     public function test_the_events_include_the_cases_the_model_handles(): void
     {
-        $this->assertSame(1, Event::whereNull('end_time')->count());
+        $this->assertSame(2, Event::whereNull('start_time')->whereNull('end_time')->count(), 'All-day events, upcoming and past.');
+        $this->assertSame(1, Event::whereNotNull('start_time')->whereNull('end_time')->count(), 'A start without an end.');
 
         $overnight = Event::whereColumn('end_time', '<=', 'start_time')->whereNotNull('end_time')->first();
 
@@ -182,17 +243,125 @@ class DemoSeederTest extends TestCase
         );
     }
 
-    public function test_news_is_dated_backwards_from_today(): void
+    /**
+     * Five releases are out and one is not: an item dated in the future is editable in
+     * the panel and invisible on the site, which is the whole point of that field.
+     */
+    public function test_the_unreleased_entries_are_dated_in_the_future(): void
     {
+        $ahead = News::where('published_at', '>', now())->count();
+
+        $this->assertGreaterThan(0, $ahead, 'An [Unreleased] section becomes an item nobody can see yet.');
+        $this->assertSame(News::count() - $ahead, News::active()->count());
+    }
+
+    /**
+     * The releases are read from the package's own changelog rather than copied into
+     * the seeder, so the demo is current on every deploy. Two releases can share a
+     * date, so the file's order has to survive the database's sort.
+     */
+    public function test_the_releases_come_from_the_changelog(): void
+    {
+        $titles = News::orderByDesc('published_at')->pluck('title');
+
+        // The package is named first, because Leap and its template release separately
+        $this->assertMatchesRegularExpression('/^(Leap|Template) unreleased — /', $titles->first());
+        $this->assertMatchesRegularExpression('/^(Leap|Template) \d+\.\d+\.\d+ — /', $titles->last());
+
+        foreach (['Leap', 'Template'] as $package) {
+            $this->assertNotEmpty($titles->filter(fn (string $t): bool => str_starts_with($t, $package)), "No releases of {$package}.");
+        }
+
         $dates = News::orderByDesc('published_at')->pluck('published_at');
 
-        $this->assertTrue($dates->first()->isPast());
-        $this->assertTrue($dates->last()->isBefore($dates->first()));
+        $this->assertSame($dates->sortDesc()->values()->all(), $dates->all(), 'Strictly descending, same-day releases included.');
+        $this->assertSame($dates->count(), $dates->unique()->count(), 'No two releases share a timestamp.');
     }
 
     public function test_projects_are_ordered_by_hand(): void
     {
-        $this->assertSame([1, 2, 3, 4, 5, 6], Project::orderBy('sort')->pluck('sort')->all());
+        $this->assertSame([1, 2, 3, 4, 5, 6, 7, 8], Project::orderBy('sort')->pluck('sort')->all());
+    }
+
+    /**
+     * The manifest and the copy have to agree even on a clone that has never run
+     * demo:images: an item pointing at a photograph nobody generates would fail
+     * silently, showing a placeholder gradient and nothing else.
+     */
+    public function test_every_item_points_at_a_photograph_the_manifest_describes(): void
+    {
+        $manifest = require database_path('seeders/demo-images.php');
+        $content = require database_path('seeders/demo-content.php');
+
+        $used = collect([$content['news'], $content['events']['future'], $content['events']['past'], $content['projects']])
+            ->flatten(1)
+            ->pluck('image');
+
+        $this->assertCount(26, $used->filter(), 'Every content item names an image.');
+
+        foreach ($used as $file) {
+            $this->assertArrayHasKey($file, $manifest['images'], "{$file} is used but not in the manifest.");
+        }
+
+        // The images are reused across items on purpose — they are placeholders, and
+        // one media record hanging off several records is worth showing
+        $this->assertEqualsCanonicalizing(
+            collect($manifest['images'])->keys()->filter(fn (string $path): bool => str_starts_with($path, 'abstract/'))->values()->all(),
+            $used->unique()->values()->all(),
+            'The items use exactly the card-sized images the manifest describes.',
+        );
+    }
+
+    /**
+     * @param  class-string<Model>  $model
+     */
+    #[DataProvider('contentTypes')]
+    public function test_every_item_carries_its_photograph(string $model): void
+    {
+        $this->skipWithoutImages();
+
+        foreach ($model::all() as $item) {
+            $media = $item->media;
+
+            $this->assertCount(1, $media, 'An item has exactly one photograph.');
+            $this->assertSame('images', $media->first()->pivot->mediable_attribute);
+            Storage::disk('public')->assertExists($media->first()->file_name);
+            $this->assertNotEmpty($media->first()->alt('nl'));
+            $this->assertNotEmpty($media->first()->alt('en'));
+        }
+    }
+
+    /**
+     * A section's photograph is not in the sections JSON but in a pivot row naming
+     * the section's own array key, which is the part that is easy to get wrong.
+     */
+    public function test_the_pages_carry_their_section_photographs(): void
+    {
+        $this->skipWithoutImages();
+
+        $home = Mediable::where('mediable_type', Page::class)->where('mediable_id', 1)->pluck('mediable_attribute');
+
+        $this->assertEqualsCanonicalizing([
+            'sections.0.image', 'sections.1.image', 'sections.2.image',
+            'sections.3.image', 'sections.4.image', 'sections.5.image',
+        ], $home->all());
+
+        // Sections gets a background rather than an inline image, and three files in
+        // the one field of its gallery section
+        $catalogue = Mediable::where('mediable_type', Page::class)->where('mediable_id', 2)->pluck('mediable_attribute');
+
+        $this->assertContains('sections.2.background', $catalogue->all());
+        $this->assertSame(3, $catalogue->filter(fn (string $a): bool => $a === 'sections.3.image')->count());
+
+        // The legal pages are deliberately without
+        $this->assertSame(0, Mediable::where('mediable_type', Page::class)->whereIn('mediable_id', [8, 9])->count());
+    }
+
+    protected function skipWithoutImages(): void
+    {
+        if (! File::exists(database_path('seeders/demo-images/abstract'))) {
+            $this->markTestSkipped('No images generated yet — run demo:images.');
+        }
     }
 
     public function test_it_creates_the_demo_account_as_a_superuser(): void
@@ -208,10 +377,11 @@ class DemoSeederTest extends TestCase
         $this->seed(DemoSeeder::class);
 
         $this->assertSame(1, User::where('email', config('demo.email'))->count());
-        $this->assertSame(1, DB::table('leap_role_user')->count());
-        $this->assertSame(6, News::count());
+        // The demo account and the editor account, one role each
+        $this->assertSame(2, DB::table('leap_role_user')->count());
+        $this->assertSame(10, News::count());
         $this->assertSame(12, Event::count());
-        $this->assertSame(6, Project::count());
-        $this->assertSame(9, Page::count());
+        $this->assertSame(8, Project::count());
+        $this->assertSame(12, Page::count());
     }
 }
