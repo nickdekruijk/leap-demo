@@ -3280,16 +3280,16 @@
         },
         {
             "name": "nickdekruijk/leap",
-            "version": "0.10.15",
+            "version": "0.10.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap.git",
-                "reference": "d487572d750621c6a5c1208e2b824cbb225b921f"
+                "reference": "0b7086b3ad22370ca4ca67af0f22e5e533431bd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/d487572d750621c6a5c1208e2b824cbb225b921f",
-                "reference": "d487572d750621c6a5c1208e2b824cbb225b921f",
+                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/0b7086b3ad22370ca4ca67af0f22e5e533431bd8",
+                "reference": "0b7086b3ad22370ca4ca67af0f22e5e533431bd8",
                 "shasum": ""
             },
             "require": {
@@ -3347,9 +3347,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap/issues",
-                "source": "https://github.com/nickdekruijk/leap/tree/0.10.15"
+                "source": "https://github.com/nickdekruijk/leap/tree/0.10.16"
             },
-            "time": "2026-07-21T09:20:33+00:00"
+            "time": "2026-07-22T15:07:37+00:00"
         },
         {
             "name": "nickdekruijk/minify",
