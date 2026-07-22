@@ -377,6 +377,10 @@ return [
 
         // Request timeout in seconds for provider calls, and a per-user rate limit
         // (max AI actions per minute) — each call hits a paid third-party API.
+        // Image generation takes tens of seconds, so it raises PHP's own execution
+        // limit to this value plus 30. Note that a web server usually gives up before
+        // PHP does (nginx defaults to 60 seconds), so raising this far above a minute
+        // needs the server's proxy timeout raised with it.
         'timeout' => 60,
         // Lower than the default 30 because every visitor of the public demo shares
         // one account, so this limit is shared between all of them at once.
@@ -395,10 +399,37 @@ return [
             // 'max_tokens' => 8192, // chat providers: cap the reply; raise for long pages
         ],
 
-        // Image generation is deliberately left off on the demo: a click costs real
-        // money and one shared account cannot be rate-limited per visitor. Set the
-        // provider here to try it on your own install — see docs/ai.md.
-        // 'image' => ['provider' => 'openai'],
+        // Generate an image from a prompt: in the editor next to a media field's browse
+        // button (prefilled from the section's own content) and in the file manager.
+        'image' => [
+            'provider' => 'openai', // 'gemini' | 'openai' (Claude and DeepL cannot generate images)
+            'model' => null,    // null => gemini-2.5-flash-image / gpt-image-1-mini
+            // Where generated images are stored on the filemanager disk. {module} is the
+            // module's folder name, so a Page lands in pages/ and a News item in news/.
+            // Set a literal ('ai') to collect them in one folder, or combine: 'ai/{module}'.
+            'folder' => '{module}',
+            'aspect_ratios' => ['16:9', '4:3', '1:1', '3:4'], // offered in the generate dialog; the result is cropped to the chosen one
+            // Low on the demo: a click costs real money and one shared account cannot be
+            // rate-limited per visitor.
+            'quality' => 'low',      // openai only: 'low' | 'medium' | 'high' (null = the provider's 'auto'). Changes the price per image by up to 35x, so setting it explicitly also makes the cost estimate exact
+            'max_width' => 1920,     // generated images are scaled down to this width
+            'jpeg_quality' => 70,    // encoding quality of the stored JPEG
+            'alt_text' => true,      // also generate alt text for the new image when the alt_text task is configured
+            'style' => null,         // optional house-style sentence appended to every prompt
+        ],
+
+        // What a call costs, used to show an estimate before generating and the actual
+        // amount after. Rates per model ship with the package (see AiTask::DEFAULT_PRICING)
+        // so they can be kept current with an update instead of going stale in every
+        // published config; list a model here only to override it. Values are US dollars
+        // per million tokens, with 'estimate' the indicative price of a single image.
+        // These are NOT billed amounts: they are computed, exclude VAT and ignore any
+        // free tier. A model with neither a default nor an entry here shows no price.
+        // Where a provider charges by quality, 'estimate' is a figure per quality.
+        // 'pricing' => [
+        //     'gemini-2.5-flash-image' => ['input' => 0.30, 'output' => 30.00, 'estimate' => 0.039],
+        //     'gpt-image-1-mini' => ['input' => 2.00, 'output' => 8.00, 'estimate' => ['low' => 0.006, 'medium' => 0.015, 'high' => 0.052]],
+        // ],
     ],
 
     /*
