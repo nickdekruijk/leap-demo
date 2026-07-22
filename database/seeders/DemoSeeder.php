@@ -225,8 +225,8 @@ class DemoSeeder extends Seeder
                     'white_text' => true,
                     'head' => ['en' => 'Change anything you like', 'nl' => 'Verander wat je wilt'],
                     'body' => [
-                        'en' => '<p>Log in with <strong>info@example.com</strong> / <strong>leapdemo</strong>. The site resets 15 minutes after the last edit.</p>',
-                        'nl' => '<p>Log in met <strong>info@example.com</strong> / <strong>leapdemo</strong>. De site reset 15 minuten na de laatste wijziging.</p>',
+                        'en' => '<p>Log in on <a href="/admin">the admin panel</a> with <strong>info@example.com</strong> / <strong>leapdemo</strong>. The site resets 15 minutes after the last edit.</p>',
+                        'nl' => '<p>Log in op <a href="/admin">het adminpaneel</a> met <strong>info@example.com</strong> / <strong>leapdemo</strong>. De site reset 15 minuten na de laatste wijziging.</p>',
                     ],
                 ],
                 [
@@ -248,8 +248,8 @@ class DemoSeeder extends Seeder
                     'head' => ['en' => 'Pages an editor composes', 'nl' => 'Pagina\'s die een redacteur samenstelt'],
                     'image_position' => 'right',
                     'body' => [
-                        'en' => '<p>This page is a list of sections: three slides, these text blocks, a quote, three card rows and a call to action. You decide which types exist; the editor adds, reorders and switches them off. Have a look at <em>Sections</em> for all of them at once.</p>',
-                        'nl' => '<p>Deze pagina is een lijst secties: drie slides, deze tekstblokken, een citaat, drie kaartenrijen en een call to action. Jij bepaalt welke types bestaan; de redacteur voegt toe, sorteert en zet uit. Kijk op <em>Secties</em> voor allemaal tegelijk.</p>',
+                        'en' => '<p>This page is a list of sections: three slides, these text blocks, a quote, three card rows and a call to action. You decide which types exist; the editor adds, reorders and switches them off. Have a look at <a href="/features/sections">Sections</a> for all of them at once.</p>',
+                        'nl' => '<p>Deze pagina is een lijst secties: drie slides, deze tekstblokken, een citaat, drie kaartenrijen en een call to action. Jij bepaalt welke types bestaan; de redacteur voegt toe, sorteert en zet uit. Kijk op <a href="/nl/functies/secties">Secties</a> voor allemaal tegelijk.</p>',
                     ],
                 ],
                 [
@@ -462,8 +462,8 @@ class DemoSeeder extends Seeder
                     'image_position' => 'left',
                     'head' => ['en' => 'Two pages, both live', 'nl' => 'Twee pagina\'s, allebei echt'],
                     'body' => [
-                        'en' => '<p><strong>Sections</strong> renders every section type this template ships with, one after another, each explaining its own fields — and a child page shows what the options on a card row do.</p><p><strong>Multilingual</strong> is proved by the language switch in the corner, and carries a page that deliberately has no Dutch version at all.</p>',
-                        'nl' => '<p><strong>Secties</strong> rendert elk sectietype dat deze template meelevert, één voor één, elk met uitleg over zijn eigen velden — en een subpagina toont wat de opties op een kaartenrij doen.</p><p><strong>Meertalig</strong> wordt bewezen door de taalschakelaar in de hoek, en heeft een pagina die met opzet helemaal geen Nederlandse versie heeft.</p>',
+                        'en' => '<p><a href="/features/sections"><strong>Sections</strong></a> renders every section type this template ships with, one after another, each explaining its own fields — and a child page shows what the options on a card row do.</p><p><a href="/features/multilingual"><strong>Multilingual</strong></a> is proved by the language switch in the corner, and carries a page that deliberately has no Dutch version at all.</p>',
+                        'nl' => '<p><a href="/nl/functies/secties"><strong>Secties</strong></a> rendert elk sectietype dat deze template meelevert, één voor één, elk met uitleg over zijn eigen velden — en een subpagina toont wat de opties op een kaartenrij doen.</p><p><a href="/nl/functies/meertalig"><strong>Meertalig</strong></a> wordt bewezen door de taalschakelaar in de hoek, en heeft een pagina die met opzet helemaal geen Nederlandse versie heeft.</p>',
                     ],
                 ],
                 [
@@ -473,8 +473,8 @@ class DemoSeeder extends Seeder
                     'image_position' => 'right',
                     'head' => ['en' => 'And the rest is in the menu', 'nl' => 'En de rest staat in het menu'],
                     'body' => [
-                        'en' => '<p><strong>Agenda</strong> and <strong>Releases</strong> are two of the three content archetypes, and <strong>Reference</strong> is the third — its cards are short definitions of everything named here.</p>',
-                        'nl' => '<p><strong>Agenda</strong> en <strong>Releases</strong> zijn twee van de drie content-archetypes, en <strong>Naslag</strong> is de derde — die kaarten zijn korte definities van alles wat hier genoemd wordt.</p>',
+                        'en' => '<p><a href="/agenda"><strong>Agenda</strong></a> and <a href="/releases"><strong>Releases</strong></a> are two of the three content archetypes, and <a href="/reference"><strong>Reference</strong></a> is the third — its cards are short definitions of everything named here.</p>',
+                        'nl' => '<p><a href="/nl/agenda"><strong>Agenda</strong></a> en <a href="/nl/releases"><strong>Releases</strong></a> zijn twee van de drie content-archetypes, en <a href="/nl/naslag"><strong>Naslag</strong></a> is de derde — die kaarten zijn korte definities van alles wat hier genoemd wordt.</p>',
                     ],
                 ],
             ],
@@ -508,7 +508,7 @@ class DemoSeeder extends Seeder
                     'head' => ['en' => 'Let AI do the second language', 'nl' => 'Laat AI de tweede taal doen'],
                     'body' => [
                         'en' => '<p>A translate button sits beside every translatable field, and one at the top fills an entire record — sections included, HTML preserved, slugs re-slugified. It is on for this demo. Try it on <a href="/features/multilingual/untranslated-example">Untranslated example</a>, the page under this one: <strong>it has no Dutch version at all</strong>. Open it in the panel, press translate, and watch it fill.</p>',
-                        'nl' => '<p>Naast elk vertaalbaar veld staat een vertaalknop, en bovenaan staat er één die een heel record vult — inclusief secties, met behoud van HTML en opnieuw geslugificeerde slugs. Op deze demo staat hij aan. Probeer het op <a href="/nl/functies/meertalig">de subpagina hieronder</a>, die <strong>helemaal geen Nederlandse versie heeft</strong> — je vindt hem alleen in het Engels. Open hem in het paneel, druk op vertalen en zie hem zich vullen.</p>',
+                        'nl' => '<p>Naast elk vertaalbaar veld staat een vertaalknop, en bovenaan staat er één die een heel record vult — inclusief secties, met behoud van HTML en opnieuw geslugificeerde slugs. Op deze demo staat hij aan. Probeer het op <a href="/features/multilingual/untranslated-example">Untranslated example</a>, de pagina onder deze: die <strong>bestaat alleen in het Engels</strong>, en heeft in het Nederlands dus geen adres — vandaar dat deze link je naar de Engelse kant brengt. Open hem in het paneel, druk op vertalen, en hij krijgt er ook een.</p>',
                     ],
                 ],
             ],
@@ -562,10 +562,10 @@ class DemoSeeder extends Seeder
                     'body' => [
                         'en' => '<p>The panel is a runtime dependency; the scaffolding is not.</p><pre><code>composer require nickdekruijk/leap
 composer require --dev nickdekruijk/leap-template
-php artisan leap:template</code></pre><p>The installer asks which languages you want and which content types to generate, then runs the migrations and creates your first user.</p>',
+php artisan leap:template</code></pre><p>The installer asks which languages you want and which content types to generate, then runs the migrations and creates your first user. What comes out is this site: the pages under <a href="/features">Features</a>, the three overviews, and <a href="/admin">the panel</a> that edits them.</p>',
                         'nl' => '<p>Het paneel is een runtime-dependency; de scaffolding niet.</p><pre><code>composer require nickdekruijk/leap
 composer require --dev nickdekruijk/leap-template
-php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt en welke content-types hij moet genereren, draait daarna de migraties en maakt je eerste gebruiker aan.</p>',
+php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt en welke content-types hij moet genereren, draait daarna de migraties en maakt je eerste gebruiker aan. Wat eruit komt is deze site: de pagina\'s onder <a href="/nl/functies">Functies</a>, de drie overzichten, en <a href="/admin">het paneel</a> dat ze bewerkt.</p>',
                     ],
                 ],
                 [

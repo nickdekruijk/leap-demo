@@ -250,12 +250,21 @@ class DemoSeederTest extends TestCase
      * Five releases are out and one is not: an item dated in the future is editable in
      * the panel and invisible on the site, which is the whole point of that field.
      */
-    public function test_the_unreleased_entries_are_dated_in_the_future(): void
+    /**
+     * A changelog only has an [Unreleased] section between releases, so the demo may
+     * legitimately have none — right after a release it does not. What must hold
+     * either way: an entry without a date is dated ahead and therefore hidden, and
+     * everything the site does show is already out.
+     */
+    public function test_an_entry_without_a_release_date_is_hidden(): void
     {
         $ahead = News::where('published_at', '>', now())->count();
 
-        $this->assertGreaterThan(0, $ahead, 'An [Unreleased] section becomes an item nobody can see yet.');
         $this->assertSame(News::count() - $ahead, News::active()->count());
+
+        foreach (News::active()->get() as $release) {
+            $this->assertTrue($release->published_at->isPast());
+        }
     }
 
     /**
@@ -268,8 +277,10 @@ class DemoSeederTest extends TestCase
         $titles = News::orderByDesc('published_at')->pluck('title');
 
         // The title is the package and its version, nothing more: what the release did
-        // is the intro, where it reads as the card's text
-        $this->assertMatchesRegularExpression('/^(Leap|Template) unreleased$/', $titles->first());
+        // is the intro, where it reads as the card's text. The newest may be an
+        // [Unreleased] section, or an ordinary version when both packages have just
+        // been released.
+        $this->assertMatchesRegularExpression('/^(Leap|Template) (unreleased|\d+\.\d+\.\d+)$/', $titles->first());
         $this->assertMatchesRegularExpression('/^(Leap|Template) \d+\.\d+\.\d+$/', $titles->last());
 
         $this->assertNotEmpty(News::orderByDesc('published_at')->skip(1)->first()->intro);

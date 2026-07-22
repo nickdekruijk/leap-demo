@@ -28,8 +28,8 @@ return [
             ],
             'head' => ['en' => 'Write now, publish later', 'nl' => 'Nu schrijven, later publiceren'],
             'body' => [
-                'en' => '<p>The news archetype treats <code>published_at</code> as a gate: an item dated in the future is invisible to visitors and stays editable in the panel until that moment passes. No queue, no cron — the query simply does not return it yet.</p><p>Open <em>Releases</em> in the admin to find this item, then move its date back to today and watch it appear on the site.</p>',
-                'nl' => '<p>Het nieuws-archetype gebruikt <code>published_at</code> als poort: een item met een datum in de toekomst is onzichtbaar voor bezoekers en blijft in het paneel bewerkbaar tot dat moment voorbij is. Geen queue, geen cron — de query geeft het simpelweg nog niet terug.</p><p>Open <em>Releases</em> in het paneel om dit item te vinden, zet de datum op vandaag en zie het op de site verschijnen.</p>',
+                'en' => '<p>The news archetype treats <code>published_at</code> as a gate: an item dated in the future is invisible to visitors and stays editable in the panel until that moment passes. No queue, no cron — the query simply does not return it yet.</p><p>Open <a href="/admin">Releases in the admin</a> to find this item, then move its date back to today and watch it appear on the site.</p>',
+                'nl' => '<p>Het nieuws-archetype gebruikt <code>published_at</code> als poort: een item met een datum in de toekomst is onzichtbaar voor bezoekers en blijft in het paneel bewerkbaar tot dat moment voorbij is. Geen queue, geen cron — de query geeft het simpelweg nog niet terug.</p><p>Open <a href="/admin">Releases in het paneel</a> om dit item te vinden, zet de datum op vandaag en zie het op de site verschijnen.</p>',
             ],
         ],
         [
@@ -170,8 +170,8 @@ return [
                 'tags' => ['Content'],
                 'title' => ['en' => 'Tagged, so a fixed row can pick it out', 'nl' => 'Getagd, zodat een vaste rij het eruit kan pikken'],
                 'intro' => [
-                    'en' => 'A card row can be narrowed to a single tag. This item carries the tag the row on Sections › Options is fixed to.',
-                    'nl' => 'Een kaartenrij kan tot één tag beperkt worden. Dit item draagt de tag waarop de rij op Secties › Opties is vastgezet.',
+                    'en' => 'A card row can be narrowed to a single tag. This item carries the tag the row on <a href="/features/sections/options">Sections › Options</a> is fixed to.',
+                    'nl' => 'Een kaartenrij kan tot één tag beperkt worden. Dit item draagt de tag waarop de rij op <a href="/nl/functies/secties/opties">Secties › Opties</a> is vastgezet.',
                 ],
                 'head' => ['en' => 'Where to set it', 'nl' => 'Waar je dat instelt'],
                 'body' => [
@@ -367,8 +367,8 @@ return [
             ],
             'head' => ['en' => 'Try it here', 'nl' => 'Probeer het hier'],
             'body' => [
-                'en' => '<p>Log in as <code>editor@example.com</code> with the demo password: same panel, fewer modules.</p>',
-                'nl' => '<p>Log in als <code>editor@example.com</code> met het demo-wachtwoord: hetzelfde paneel, minder modules.</p>',
+                'en' => '<p>Log in on <a href="/admin">the admin panel</a> as <code>editor@example.com</code> with the demo password: same panel, fewer modules.</p>',
+                'nl' => '<p>Log in op <a href="/admin">het adminpaneel</a> als <code>editor@example.com</code> met het demo-wachtwoord: hetzelfde paneel, minder modules.</p>',
             ],
         ],
         [
@@ -395,8 +395,8 @@ return [
             ],
             'head' => ['en' => 'One source', 'nl' => 'Eén bron'],
             'body' => [
-                'en' => '<p>The cookie table on the Privacy page is rendered from the same config the banner enforces, so the two cannot disagree.</p>',
-                'nl' => '<p>De cookietabel op de Privacy-pagina komt uit dezelfde config die de banner afdwingt, dus die twee kunnen niet van elkaar afwijken.</p>',
+                'en' => '<p>The cookie table on <a href="/privacy">Privacy</a> is rendered from the same config the banner enforces, so the two cannot disagree.</p>',
+                'nl' => '<p>De cookietabel op <a href="/nl/privacy">Privacy</a> komt uit dezelfde config die de banner afdwingt, dus die twee kunnen niet van elkaar afwijken.</p>',
             ],
         ],
     ],
