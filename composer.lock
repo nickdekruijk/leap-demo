@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a44d94da25a557ea499453d432e8109b",
+    "content-hash": "72aa27cdbc83910140c1f495f169dcaf",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3280,16 +3280,16 @@
         },
         {
             "name": "nickdekruijk/leap",
-            "version": "0.10.18",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap.git",
-                "reference": "d90dc0d9fa78b9223964bc8ccff0d71d54de59c1"
+                "reference": "4438efa7bf27a5e77a7cbb07658da76e6bee53a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/d90dc0d9fa78b9223964bc8ccff0d71d54de59c1",
-                "reference": "d90dc0d9fa78b9223964bc8ccff0d71d54de59c1",
+                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/4438efa7bf27a5e77a7cbb07658da76e6bee53a4",
+                "reference": "4438efa7bf27a5e77a7cbb07658da76e6bee53a4",
                 "shasum": ""
             },
             "require": {
@@ -3301,12 +3301,12 @@
                 "laravel/framework": "^12.0|^13.0",
                 "laravel/passkeys": "^0.2.1",
                 "livewire/livewire": "^3.7|^4.1",
-                "owenvoke/blade-fontawesome": "^3.1",
+                "owenvoke/blade-fontawesome": "^3.2.2",
                 "php": "^8.3",
                 "spatie/laravel-translatable": "^6.10"
             },
             "require-dev": {
-                "laravel/pint": "^1.18",
+                "laravel/pint": "^1.18.1",
                 "orchestra/testbench": "^10.0|^11.0",
                 "phpunit/phpunit": "^11.0|^12.0"
             },
@@ -3347,9 +3347,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap/issues",
-                "source": "https://github.com/nickdekruijk/leap/tree/0.10.18"
+                "source": "https://github.com/nickdekruijk/leap/tree/1.0.0"
             },
-            "time": "2026-07-23T11:49:49+00:00"
+            "time": "2026-07-23T16:45:20+00:00"
         },
         {
             "name": "nickdekruijk/minify",
@@ -11652,25 +11652,25 @@
         },
         {
             "name": "nickdekruijk/leap-template",
-            "version": "0.10.18",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap-template.git",
-                "reference": "aecbbfff72d39794498b23c7def49b9a52f76903"
+                "reference": "bbf0acc3ae3f0521dce187c076917acdcea98416"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/aecbbfff72d39794498b23c7def49b9a52f76903",
-                "reference": "aecbbfff72d39794498b23c7def49b9a52f76903",
+                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/bbf0acc3ae3f0521dce187c076917acdcea98416",
+                "reference": "bbf0acc3ae3f0521dce187c076917acdcea98416",
                 "shasum": ""
             },
             "require": {
                 "laravel/framework": "^12.0|^13.0",
-                "nickdekruijk/leap": "^0.10.15",
+                "nickdekruijk/leap": "^1.0",
                 "php": "^8.3"
             },
             "require-dev": {
-                "laravel/pint": "^1.18",
+                "laravel/pint": "^1.18.1",
                 "orchestra/testbench": "^10.0|^11.0",
                 "phpunit/phpunit": "^11.0|^12.0"
             },
@@ -11714,9 +11714,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap-template/issues",
-                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.18"
+                "source": "https://github.com/nickdekruijk/leap-template/tree/1.0.0"
             },
-            "time": "2026-07-23T11:50:10+00:00"
+            "time": "2026-07-23T16:47:41+00:00"
         },
         {
             "name": "nunomaduro/collision",

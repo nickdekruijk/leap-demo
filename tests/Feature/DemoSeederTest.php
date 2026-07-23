@@ -159,7 +159,10 @@ class DemoSeederTest extends TestCase
             ->flatMap(fn ($item) => $item->tags->map(fn ($tag): string => $tag->getTranslation('name', 'en')))
             ->unique()->sort()->values()->all();
 
-        $this->assertSame(['Added', 'Changed', 'Fixed', 'Leap', 'Security', 'Template'], $tagsOf(News::class));
+        // 'Tests' comes from leap 1.0.0's own "### Tests" section: the seeder turns every
+        // "### " heading into a chip, so a release that groups under something outside
+        // Keep a Changelog's vocabulary widens this list.
+        $this->assertSame(['Added', 'Changed', 'Fixed', 'Leap', 'Security', 'Template', 'Tests'], $tagsOf(News::class));
         $this->assertSame(['Content', 'Dates & times', 'Media'], $tagsOf(Event::class));
         $this->assertSame(['AI', 'Content', 'Media', 'Panel', 'Privacy'], $tagsOf(Project::class));
     }
