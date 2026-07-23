@@ -268,6 +268,36 @@ class DemoSeederTest extends TestCase
     }
 
     /**
+     * A release dated today is out — the changelog says so — but its noon timestamp
+     * may not have arrived yet. A reset before 12:00 must clamp it to the reset's own
+     * moment rather than hide today's release for hours, which on the demo host means
+     * every deploy made in the morning.
+     */
+    public function test_a_release_dated_today_is_visible_after_a_morning_reset(): void
+    {
+        $newest = News::where('published_at', '<=', now())->orderByDesc('published_at')->first();
+
+        // Re-seed at 09:00 on the newest release's own date, so that entry is "today"
+        $this->travelTo($newest->published_at->copy()->startOfDay()->addHours(9));
+        News::query()->delete();
+        $this->seed(DemoSeeder::class);
+
+        $today = News::active()->whereDate('published_at', now()->toDateString())->get();
+
+        $this->assertNotEmpty($today, "Today's release is hidden after a morning reset.");
+
+        foreach ($today as $release) {
+            $this->assertLessThanOrEqual(now(), $release->published_at);
+        }
+
+        // The clamp must not break what the timestamps exist for: distinct values
+        // in the file's own order
+        $dates = News::orderByDesc('published_at')->pluck('published_at');
+
+        $this->assertSame($dates->count(), $dates->unique()->count(), 'No two releases share a timestamp.');
+    }
+
+    /**
      * The releases are read from the package's own changelog rather than copied into
      * the seeder, so the demo is current on every deploy. Two releases can share a
      * date, so the file's order has to survive the database's sort.

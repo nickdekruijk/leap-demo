@@ -791,10 +791,12 @@ php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt
             // Two releases can share a day, and the file is newest first: stepping the
             // clock back per entry keeps that order after the database sorts on it.
             // The extra minute per package keeps the two apart on a shared date.
+            // Noon is capped at now(): a release dated today is out — the changelog
+            // says so — and must not hide until 12:00 after a morning reset.
             $seen = $perDay[$date] = ($perDay[$date] ?? -1) + 1;
             $published = $unreleased
                 ? now()->addDays(10)->subMinutes($offset)->toDateTimeString()
-                : Carbon::parse($date)->setTime(12, 0)->subMinutes($seen * 30 + $offset)->toDateTimeString();
+                : Carbon::parse($date)->setTime(12, 0)->min(now())->subMinutes($seen * 30 + $offset)->toDateTimeString();
 
             // Title and intro are plain text on the card, so they get the markdown
             // stripped rather than turned into HTML — escaping them here would show
