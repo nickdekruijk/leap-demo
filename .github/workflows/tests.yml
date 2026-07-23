@@ -1,0 +1,39 @@
+name: tests
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+# An application, not a package: it runs on the one PHP version it is deployed on,
+# against the leap release its composer.lock pins, so there is no matrix to sweep.
+# What this catches is the demo breaking under a leap update.
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: PHP 8.5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Prepare the environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      # No asset build: the layout bundles through nickdekruijk/minify, which compiles
+      # from source on first request, and no view uses @vite. The database comes from
+      # phpunit.xml (sqlite, :memory:), so there is no service container either.
+      - name: Run tests
+        run: php artisan test
