@@ -3280,16 +3280,16 @@
         },
         {
             "name": "nickdekruijk/leap",
-            "version": "0.10.17",
+            "version": "0.10.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap.git",
-                "reference": "aabdee582a24df8fdc661ccc439dc483ec1ee327"
+                "reference": "d90dc0d9fa78b9223964bc8ccff0d71d54de59c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/aabdee582a24df8fdc661ccc439dc483ec1ee327",
-                "reference": "aabdee582a24df8fdc661ccc439dc483ec1ee327",
+                "url": "https://api.github.com/repos/nickdekruijk/leap/zipball/d90dc0d9fa78b9223964bc8ccff0d71d54de59c1",
+                "reference": "d90dc0d9fa78b9223964bc8ccff0d71d54de59c1",
                 "shasum": ""
             },
             "require": {
@@ -3347,9 +3347,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap/issues",
-                "source": "https://github.com/nickdekruijk/leap/tree/0.10.17"
+                "source": "https://github.com/nickdekruijk/leap/tree/0.10.18"
             },
-            "time": "2026-07-23T09:33:30+00:00"
+            "time": "2026-07-23T11:49:49+00:00"
         },
         {
             "name": "nickdekruijk/minify",
@@ -11652,16 +11652,16 @@
         },
         {
             "name": "nickdekruijk/leap-template",
-            "version": "0.10.17",
+            "version": "0.10.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nickdekruijk/leap-template.git",
-                "reference": "9347187b199eb6cdab68c39f03f3ef41795f56b4"
+                "reference": "aecbbfff72d39794498b23c7def49b9a52f76903"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/9347187b199eb6cdab68c39f03f3ef41795f56b4",
-                "reference": "9347187b199eb6cdab68c39f03f3ef41795f56b4",
+                "url": "https://api.github.com/repos/nickdekruijk/leap-template/zipball/aecbbfff72d39794498b23c7def49b9a52f76903",
+                "reference": "aecbbfff72d39794498b23c7def49b9a52f76903",
                 "shasum": ""
             },
             "require": {
@@ -11714,9 +11714,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nickdekruijk/leap-template/issues",
-                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.17"
+                "source": "https://github.com/nickdekruijk/leap-template/tree/0.10.18"
             },
-            "time": "2026-07-23T09:33:30+00:00"
+            "time": "2026-07-23T11:50:10+00:00"
         },
         {
             "name": "nunomaduro/collision",
