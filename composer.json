@@ -1,11 +1,12 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "nickdekruijk/leap-demo",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Demo application for the Leap admin panel and its site template.",
     "keywords": [
         "laravel",
-        "framework"
+        "leap",
+        "demo"
     ],
     "license": "MIT",
     "require": {
