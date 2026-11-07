@@ -770,7 +770,8 @@ php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt
         }
 
         preg_match_all(
-            '/^## \[([^\]]+)\](?: — (\d{4}-\d{2}-\d{2}))?\R(.*?)(?=^## \[|\z)/ms',
+            // Older entries put an em dash before the date, newer ones a plain hyphen
+            '/^## \[([^\]]+)\](?: [—–-] (\d{4}-\d{2}-\d{2}))?\R(.*?)(?=^## \[|\z)/msu',
             $markdown,
             $releases,
             PREG_SET_ORDER,
@@ -780,8 +781,14 @@ php artisan leap:template</code></pre><p>De installer vraagt welke talen je wilt
         $perDay = [];
 
         foreach (array_slice($releases, 0, $limit) as $index => [, $version, $date, $body]) {
-            // Every entry opens with a bold sentence saying what changed
-            preg_match_all('/^- \*\*(.+?)\*\*(.*)$/m', $body, $highlights, PREG_SET_ORDER);
+            // Every entry opens with a bold sentence saying what changed. A long one
+            // wraps onto the next line, so the bold may span lines; the wrap is
+            // folded back into a single space
+            preg_match_all('/^- \*\*((?:[^*]|\*(?!\*))+?)\*\*(.*)$/m', $body, $highlights, PREG_SET_ORDER);
+            $highlights = array_map(
+                fn (array $h): array => [$h[0], preg_replace('/\s+/', ' ', $h[1]), $h[2]],
+                $highlights,
+            );
 
             if ($highlights === []) {
                 continue;

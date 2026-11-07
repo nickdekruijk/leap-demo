@@ -159,10 +159,17 @@ class DemoSeederTest extends TestCase
             ->flatMap(fn ($item) => $item->tags->map(fn ($tag): string => $tag->getTranslation('name', 'en')))
             ->unique()->sort()->values()->all();
 
-        // 'Tests' comes from leap 1.0.0's own "### Tests" section: the seeder turns every
-        // "### " heading into a chip, so a release that groups under something outside
-        // Keep a Changelog's vocabulary widens this list.
-        $this->assertSame(['Added', 'Changed', 'Fixed', 'Leap', 'Security', 'Template', 'Tests'], $tagsOf(News::class));
+        // Which sections the newest releases use changes with every release, so the
+        // chips are checked against the vocabulary rather than pinned. 'Tests' is the
+        // one heading outside Keep a Changelog: template 1.0.0 has a "### Tests" section,
+        // and the seeder turns every "### " heading into a chip.
+        $newsTags = $tagsOf(News::class);
+        $sections = array_values(array_diff($newsTags, ['Leap', 'Template']));
+
+        $this->assertContains('Leap', $newsTags);
+        $this->assertContains('Template', $newsTags);
+        $this->assertNotEmpty($sections, 'No release carries a changelog section as a tag.');
+        $this->assertSame([], array_values(array_diff($sections, ['Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Security', 'Tests'])));
         $this->assertSame(['Content', 'Dates & times', 'Media'], $tagsOf(Event::class));
         $this->assertSame(['AI', 'Content', 'Media', 'Panel', 'Privacy'], $tagsOf(Project::class));
     }
@@ -318,8 +325,18 @@ class DemoSeederTest extends TestCase
 
         $this->assertNotEmpty(News::orderByDesc('published_at')->skip(1)->first()->intro);
 
-        foreach (['Leap', 'Template'] as $package) {
-            $this->assertNotEmpty($titles->filter(fn (string $t): bool => str_starts_with($t, $package)), "No releases of {$package}.");
+        foreach (['Leap' => 'leap', 'Template' => 'leap-template'] as $package => $repository) {
+            $ofPackage = $titles->filter(fn (string $t): bool => str_starts_with($t, $package));
+
+            $this->assertNotEmpty($ofPackage, "No releases of {$package}.");
+
+            // The newest release on the site is the newest one in the changelog: a
+            // heading the parser does not recognise would skip it silently
+            $changelog = base_path("vendor/nickdekruijk/{$repository}/CHANGELOG.md");
+
+            if (File::exists($changelog) && preg_match('/^## \[(\d+\.\d+\.\d+)\]/m', File::get($changelog), $newest)) {
+                $this->assertContains("{$package} {$newest[1]}", $ofPackage->all(), "{$package} {$newest[1]} is missing from the releases.");
+            }
         }
 
         $dates = News::orderByDesc('published_at')->pluck('published_at');
